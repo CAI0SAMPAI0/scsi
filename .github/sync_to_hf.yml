@@ -14,5 +14,5 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git remote add space https://huggingface.co
+          git remote add space https://huggingface.co/spaces/caio007/scsi/tree/main
           git push --force space main
