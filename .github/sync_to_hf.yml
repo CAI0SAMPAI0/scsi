@@ -1,18 +1,55 @@
-name: Sync to Hugging Face Hub
+name: Deploy Backend to Hugging Face Spaces
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+  workflow_dispatch: {}
+
 jobs:
-  sync-to-hub:
+  deploy-to-huggingface:
+    name: Sync Backend to Hugging Face
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Push to Hugging Face
+
+      - name: Push to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git remote add space https://huggingface.co/spaces/caio007/scsi/tree/main
-          git push --force space main
+          git config --global user.email "github-actions-bot@example.com"
+          git config --global user.name "GitHub Actions Bot"
+          
+          # Ativa o Git LFS no runner
+          git lfs install
+          
+          # Clone the Hugging Face Space repository into a temporary folder
+          git clone https://caio007:$HF_TOKEN@huggingface.co/spaces/caio007/scsi hf_space_dir
+          
+          # Remove existing files in the Space directory, keeping only the .git directory
+          find hf_space_dir -maxdepth 1 ! -name 'hf_space_dir' ! -name '.git' -exec rm -rf {} +
+          
+          # Copy backend files into the Space directory
+          cp -r backend/* hf_space_dir/
+          # Copia explicitamente o arquivo .gitattributes para a raiz da pasta do Space
+          cp backend/.gitattributes hf_space_dir/ || true
+          
+          # Enter the Space directory
+          cd hf_space_dir
+          
+          # Inicializa o Git LFS localmente na pasta do Space
+          git lfs install --local
+          
+          # Check if there are changes to deploy
+          git add .
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Deploy automático: ${{ github.event.head_commit.message }}"
+            git push origin main
+          else
+            echo "Nenhuma alteração detectada no backend."
+          fi
