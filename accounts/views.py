@@ -25,7 +25,7 @@ class EmailLoginView(LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
-        return reverse_lazy('dashboard')
+        return reverse_lazy('accounts:dashboard')
 
 
 class RegisterView(CreateView):
@@ -35,7 +35,7 @@ class RegisterView(CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect('dashboard')
+            return redirect('accounts:dashboard')
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):

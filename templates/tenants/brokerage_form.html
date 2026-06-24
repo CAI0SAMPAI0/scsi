@@ -1,0 +1,114 @@
+{% extends "base_app.html" %}
+
+{% block title %}Dados da Corretora{% endblock %}
+{% block page_title %}Dados da Corretora{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <h6 class="fw-semibold mb-3">Identificação</h6>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Razão Social *</label>
+                            {{ form.legal_name }}
+                            {% if form.legal_name.errors %}<div class="invalid-feedback d-block">{{ form.legal_name.errors|join:" " }}</div>{% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Nome Fantasia</label>
+                            {{ form.trade_name }}
+                            {% if form.trade_name.errors %}<div class="invalid-feedback d-block">{{ form.trade_name.errors|join:" " }}</div>{% endif %}
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-medium">CNPJ *</label>
+                                {{ form.cnpj }}
+                                {% if form.cnpj.errors %}<div class="invalid-feedback d-block">{{ form.cnpj.errors|join:" " }}</div>{% endif %}
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-medium">Código SUSEP</label>
+                                {{ form.susep_code }}
+                                {% if form.susep_code.errors %}<div class="invalid-feedback d-block">{{ form.susep_code.errors|join:" " }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <h6 class="fw-semibold mb-3 mt-4">Contato</h6>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-medium">E-mail *</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}<div class="invalid-feedback d-block">{{ form.email.errors|join:" " }}</div>{% endif %}
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-medium">Telefone</label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}<div class="invalid-feedback d-block">{{ form.phone.errors|join:" " }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <h6 class="fw-semibold mb-3 mt-4">Endereço</h6>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-9">
+                                <label class="form-label fw-medium">Logradouro</label>
+                                {{ form.street }}
+                            </div>
+                            <div class="col-3">
+                                <label class="form-label fw-medium">Número</label>
+                                {{ form.number }}
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-4">
+                                <label class="form-label fw-medium">Complemento</label>
+                                {{ form.complement }}
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label fw-medium">Bairro</label>
+                                {{ form.district }}
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label fw-medium">CEP</label>
+                                {{ form.zip_code }}
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-8">
+                                <label class="form-label fw-medium">Cidade</label>
+                                {{ form.city }}
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label fw-medium">UF</label>
+                                {{ form.state }}
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary fw-semibold" id="btn-brokerage-save">
+                                <i class="feather-save me-2"></i>Salvar alterações
+                            </button>
+                            <a href="{% url 'tenants:my_plan' %}" class="btn btn-light fw-medium">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

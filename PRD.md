@@ -4,7 +4,7 @@
 > **Data:** 2026-05-28
 > **Status:** Aprovado para desenvolvimento
 > **Domínio de produção:** `scsi.digital`
-> **Stack núcleo:** Python 3.13+ · Django 6.0+ · PostgreSQL · Celery + RabbitMQ · Docker Swarm + Traefik · LangChain 1.0+ / LangGraph · Groq Llama 3.3 70B
+> **Stack núcleo:** Python 3.13+ · Django 6.0+ · PostgreSQL · Celery + RabbitMQ · Docker Swarm + Traefik · LangChain 1.0+ / LangGraph · Groq llama-3.1-8b-instant
 
 ---
 
@@ -395,7 +395,7 @@ graph TB
     end
 
     subgraph "External Services"
-        OAI[Groq - Llama 3.3 70B]
+        OAI[Groq - llama-3.1-8b-instant]
         SMTP[SMTP - emails]
     end
 
@@ -560,11 +560,11 @@ O **tenant é a `Brokerage` (corretora)**. Um `User` pertence a exatamente uma `
 | Pacote | Versão mínima | Motivo |
 |---|---|---|
 | `langchain` | `>= 1.0.0` | Núcleo de orquestração (LCEL, mensagens, prompts) |
-| `langchain-groq` | `>= 1.0.0` | `Llama 3.3 70B` para LLM |
+| `langchain-groq` | `>= 1.0.0` | `llama-3.1-8b-instant` para LLM |
 | `langgraph` | `>= 1.0.0` | `StateGraph` para resumos e agente de chat com tools |
 | `groq` | `>= 2.0.0` | SDK oficial usado por baixo do `langchain-groq` |
 
-**Modelo padrão:** `Llama 3.3 70B` (via GROQ), configurável por env (`GROQ_API_KEY`). Suficiente para resumos e chat sobre dados estruturados.
+**Modelo padrão:** `llama-3.1-8b-instant` (via GROQ), configurável por env (`GROQ_API_KEY`). Suficiente para resumos e chat sobre dados estruturados.
 
 ### 10.3 Bibliotecas de Apoio
 
@@ -1821,7 +1821,7 @@ Data de hoje: {today}. Papel do usuário: {role}.
 
 | Estratégia | Decisão |
 |---|---|
-| Modelo padrão | Llama 3.3 70B (OpenSource) via env `GROQ_API_KEY` |
+| Modelo padrão | llama-3.1-8b-instant (OpenSource) via env `GROQ_API_KEY` |
 | Janela de histórico | Últimas N mensagens (ex.: 10) por sessão |
 | Tools compactas | Retornam apenas campos essenciais e limitam nº de linhas |
 | Resumos assíncronos | Não bloqueiam request; rodam no worker |

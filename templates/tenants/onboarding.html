@@ -1,0 +1,120 @@
+{% extends "base_auth.html" %}
+
+{% block title %}Cadastro da Corretora{% endblock %}
+
+{% block auth_content %}
+<h5 class="fw-bold mb-1">Cadastro da Corretora</h5>
+<p class="text-muted small mb-4">Preencha os dados da sua corretora para começar.</p>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+    </div>
+    {% endif %}
+
+    <h6 class="fw-semibold mb-3">Identificação</h6>
+
+    <div class="mb-3">
+        <label class="form-label fw-medium">Razão Social *</label>
+        {{ form.legal_name }}
+        {% if form.legal_name.errors %}<div class="invalid-feedback d-block">{{ form.legal_name.errors|join:" " }}</div>{% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-medium">Nome Fantasia</label>
+        {{ form.trade_name }}
+        {% if form.trade_name.errors %}<div class="invalid-feedback d-block">{{ form.trade_name.errors|join:" " }}</div>{% endif %}
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-6">
+            <label class="form-label fw-medium">CNPJ *</label>
+            {{ form.cnpj }}
+            {% if form.cnpj.errors %}<div class="invalid-feedback d-block">{{ form.cnpj.errors|join:" " }}</div>{% endif %}
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-medium">Código SUSEP</label>
+            {{ form.susep_code }}
+            {% if form.susep_code.errors %}<div class="invalid-feedback d-block">{{ form.susep_code.errors|join:" " }}</div>{% endif %}
+        </div>
+    </div>
+
+    <h6 class="fw-semibold mb-3 mt-4">Contato</h6>
+
+    <div class="row g-3 mb-3">
+        <div class="col-6">
+            <label class="form-label fw-medium">E-mail *</label>
+            {{ form.email }}
+            {% if form.email.errors %}<div class="invalid-feedback d-block">{{ form.email.errors|join:" " }}</div>{% endif %}
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-medium">Telefone</label>
+            {{ form.phone }}
+            {% if form.phone.errors %}<div class="invalid-feedback d-block">{{ form.phone.errors|join:" " }}</div>{% endif %}
+        </div>
+    </div>
+
+    <h6 class="fw-semibold mb-3 mt-4">Endereço <span class="text-muted fw-normal">(opcional)</span></h6>
+
+    <div class="row g-3 mb-3">
+        <div class="col-9">
+            <label class="form-label fw-medium">Logradouro</label>
+            {{ form.street }}
+        </div>
+        <div class="col-3">
+            <label class="form-label fw-medium">Número</label>
+            {{ form.number }}
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-4">
+            <label class="form-label fw-medium">Complemento</label>
+            {{ form.complement }}
+        </div>
+        <div class="col-4">
+            <label class="form-label fw-medium">Bairro</label>
+            {{ form.district }}
+        </div>
+        <div class="col-4">
+            <label class="form-label fw-medium">CEP</label>
+            {{ form.zip_code }}
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-8">
+            <label class="form-label fw-medium">Cidade</label>
+            {{ form.city }}
+        </div>
+        <div class="col-4">
+            <label class="form-label fw-medium">UF</label>
+            {{ form.state }}
+        </div>
+    </div>
+
+    {% if plans %}
+    <h6 class="fw-semibold mb-3 mt-4">Plano</h6>
+    <div class="mb-4">
+        {% for plan in plans %}
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="radio" name="plan_choice" id="plan_{{ plan.slug }}" value="{{ plan.slug }}" {% if plan.slug == 'free' %}checked{% endif %} {% if not plan.is_available %}disabled{% endif %}>
+            <label class="form-check-label fw-medium" for="plan_{{ plan.slug }}">
+                {{ plan.name }} — R$ {{ plan.price }}
+                {% if not plan.is_available %}<span class="badge bg-secondary ms-2">Em breve</span>{% endif %}
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="d-grid mb-3">
+        <button type="submit" class="btn btn-primary btn-lg fw-semibold" id="btn-onboarding">
+            <i class="feather-check-circle me-2"></i>Cadastrar Corretora
+        </button>
+    </div>
+</form>
+{% endblock %}

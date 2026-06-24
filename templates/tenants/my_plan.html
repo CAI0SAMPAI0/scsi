@@ -1,0 +1,95 @@
+{% extends "base_app.html" %}
+
+{% block title %}Meu Plano{% endblock %}
+{% block page_title %}Meu Plano{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+
+            <!-- Current Plan Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="fw-bold mb-0">Plano Atual</h5>
+                        {% if request.user.role == 'owner' %}
+                        <a href="{% url 'tenants:brokerage_update' %}" class="btn btn-sm btn-outline-primary">
+                            <i class="feather-edit-2 me-1"></i>Editar dados
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle fw-bold" style="width:56px;height:56px;font-size:1.25rem;">
+                            {{ plan.name|truncatechars:1 }}
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-0">{{ plan.name }}</h4>
+                            <span class="text-muted">R$ {{ plan.price }}/mês</span>
+                        </div>
+                        <span class="badge bg-success ms-auto">Ativo</span>
+                    </div>
+
+                    <div class="row g-3 mt-3">
+                        <div class="col-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <div class="fs-4 fw-bold text-primary">{{ member_count }}</div>
+                                <div class="text-muted small">Usuários</div>
+                                <div class="text-muted small">limite: {{ plan.max_users|default:"ilimitado" }}</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <div class="fs-4 fw-bold text-primary">{{ plan.max_clients|default:"∞" }}</div>
+                                <div class="text-muted small">Clientes</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <div class="fs-4 fw-bold text-primary">{{ plan.max_policies|default:"∞" }}</div>
+                                <div class="text-muted small">Apólices</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Plans -->
+            <h5 class="fw-bold mb-3">Planos Disponíveis</h5>
+            <div class="row g-3">
+                {% for p in available_plans %}
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 {% if p.slug == plan.slug %}border-primary{% endif %}">
+                        <div class="card-body p-4 text-center">
+                            <h5 class="fw-bold">{{ p.name }}</h5>
+                            <div class="fs-3 fw-bold text-primary mb-2">R$ {{ p.price }}</div>
+                            <div class="text-muted small mb-3">/mês</div>
+
+                            {% if p.features %}
+                            <ul class="list-unstyled text-start small">
+                                {% for key, val in p.features.items %}
+                                {% if val %}
+                                <li class="mb-1"><i class="feather-check text-success me-2"></i>{{ key }}</li>
+                                {% endif %}
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+
+                            {% if p.slug == plan.slug %}
+                            <button class="btn btn-primary w-100" disabled>Plano Atual</button>
+                            {% elif not p.is_available %}
+                            <button class="btn btn-secondary w-100" disabled>Em breve</button>
+                            {% else %}
+                            <button class="btn btn-outline-primary w-100" disabled>Em breve</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

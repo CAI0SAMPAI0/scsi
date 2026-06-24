@@ -11,12 +11,12 @@ from tenants.models import Brokerage, Plan
 class BrokerageOnboardingView(LoginRequiredMixin, CreateView):
     template_name = 'tenants/onboarding.html'
     form_class = BrokerageOnboardingForm
-    success_url = reverse_lazy('dashboard')
+    success_url = reverse_lazy('accounts:dashboard')
 
     def dispatch(self, request, *args, **kwargs):
         # Already has a brokerage
         if request.user.is_authenticated and request.user.brokerage_id:
-            return redirect('dashboard')
+            return redirect('accounts:dashboard')
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

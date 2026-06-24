@@ -30,12 +30,12 @@ class DocumentUploadView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         if not request.tenant:
             messages.error(request, 'Sem tenant associado.')
-            return redirect('dashboard')
+            return redirect('accounts:dashboard')
 
         uploaded_file = request.FILES.get('file')
         if not uploaded_file:
             messages.error(request, 'Nenhum arquivo enviado.')
-            return redirect(request.META.get('HTTP_REFERER', 'dashboard'))
+            return redirect(request.META.get('HTTP_REFERER', 'accounts:dashboard'))
 
         content_type_id = request.POST.get('content_type_id')
         object_id       = request.POST.get('object_id')
@@ -52,7 +52,7 @@ class DocumentUploadView(LoginRequiredMixin, View):
             size=uploaded_file.size,
         )
         messages.success(request, f'Arquivo "{uploaded_file.name}" enviado com sucesso.')
-        return redirect(request.META.get('HTTP_REFERER', 'dashboard'))
+        return redirect(request.META.get('HTTP_REFERER', 'accounts:dashboard'))
 
 
 class DocumentListView(LoginRequiredMixin, ListView):
