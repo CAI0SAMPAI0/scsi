@@ -148,3 +148,17 @@ body {
     position: relative;
     z-index: 1;
 }
+
+/* === Sidebar caption fix (feather font removed) === */
+.minimenu .nxl-navigation .navbar-content .nxl-caption {
+    display: none;
+}
+.minimenu .nxl-navigation:hover .navbar-content .nxl-caption {
+    display: block;
+}
+.minimenu .nxl-navigation:hover .navbar-content .nxl-caption:before {
+    content: none !important;
+}
+.minimenu .nxl-navigation:hover .navbar-content .nxl-caption label {
+    display: block !important;
+}
