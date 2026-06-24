@@ -156,14 +156,15 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         ctx['claims_by_status'] = claims_by_status
 
         # Monthly production (last 6 months)
-        monthly = list(Policy.objects.filter(
+        monthly_qs = Policy.objects.filter(
             brokerage=tenant, start_date__isnull=False,
         ).annotate(
             month=TruncMonth('start_date'),
         ).values('month').annotate(
             premium=Sum('total_premium'),
             commission=Sum('total_premium'),
-        ).order_by('month')[-6:])
+        ).order_by('month')
+        monthly = list(monthly_qs)[-6:]
 
         for m in monthly:
             m['label'] = m['month'].strftime('%b/%Y')
