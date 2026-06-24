@@ -1,0 +1,89 @@
+{% extends "base_app.html" %}
+
+{% block title %}Kanban{% endblock %}
+{% block page_title %}CRM — Kanban{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex gap-2">
+            <select class="form-select form-select-sm" style="width:auto;" onchange="window.location.href='?pipeline='+this.value">
+                {% for p in pipelines %}
+                <option value="{{ p.pk }}" {% if pipeline and p.pk == pipeline.pk %}selected{% endif %}>{{ p.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <a href="{% url 'crm:deal_create' %}" class="btn btn-primary btn-sm">
+            <i class="feather-plus me-1"></i>Negociação
+        </a>
+    </div>
+
+    <div class="d-flex gap-3 overflow-auto pb-3" style="min-height:400px;">
+        {% for s in stages %}
+        <div class="kanban-column flex-shrink-0" style="width:280px;">
+            <div class="card border-0 shadow-sm mb-2">
+                <div class="card-body py-2 px-3 d-flex justify-content-between align-items-center" style="border-top:3px solid {{ s.stage.color }};">
+                    <span class="fw-bold small">{{ s.stage.name }}</span>
+                    <span class="badge bg-secondary">{{ s.count }}</span>
+                </div>
+            </div>
+            <div class="kanban-cards" data-stage-id="{{ s.stage.pk }}">
+                {% for deal in s.deals %}
+                <div class="card border-0 shadow-sm mb-2 kanban-card" draggable="true" data-deal-id="{{ deal.pk }}">
+                    <div class="card-body py-2 px-3">
+                        <a href="{% url 'crm:deal_detail' pk=deal.pk %}" class="text-decoration-none">
+                            <div class="fw-bold small text-dark">{{ deal.title }}</div>
+                        </a>
+                        {% if deal.client %}
+                        <div class="text-muted" style="font-size:0.8rem;">{{ deal.client.name }}</div>
+                        {% endif %}
+                        <div class="d-flex justify-content-between mt-1">
+                            <span class="text-primary fw-bold" style="font-size:0.8rem;">R$ {{ deal.estimated_value }}</span>
+                            {% if deal.line_of_business %}
+                            <span class="badge bg-light text-dark" style="font-size:0.7rem;">{{ deal.line_of_business.name }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center text-muted py-5 w-100">
+            <p>Nenhuma etapa encontrada para este pipeline.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.kanban-card');
+    const columns = document.querySelectorAll('.kanban-cards');
+
+    cards.forEach(card => {
+        card.addEventListener('dragstart', e => {
+            e.dataTransfer.setData('text/plain', card.dataset.dealId);
+            card.classList.add('opacity-50');
+        });
+        card.addEventListener('dragend', () => card.classList.remove('opacity-50'));
+    });
+
+    columns.forEach(col => {
+        col.addEventListener('dragover', e => { e.preventDefault(); col.style.background = '#f0f0f0'; });
+        col.addEventListener('dragleave', () => col.style.background = '');
+        col.addEventListener('drop', e => {
+            e.preventDefault();
+            col.style.background = '';
+            const dealId = e.dataTransfer.getData('text/plain');
+            const stageId = col.dataset.stageId;
+            fetch("{% url 'crm:deal_move' %}", {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
+                body: JSON.stringify({deal_id: dealId, stage_id: stageId})
+            }).then(r => r.json()).then(d => { if(d.ok) window.location.reload(); });
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "base_app.html" %}
+
+{% block title %}Comissões{% endblock %}
+{% block page_title %}Comissões e Repasses{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <span class="badge bg-success me-2">Recebido: R$ {{ total_received }}</span>
+            <span class="badge bg-warning me-2">Pendente: R$ {{ total_pending }}</span>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Apólice</th>
+                            <th>Prêmio Base</th>
+                            <th>Taxa (%)</th>
+                            <th>Valor Recebido</th>
+                            <th>Status</th>
+                            <th>Data Ref.</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in commissions %}
+                        <tr>
+                            <td>{{ c.pk }}</td>
+                            <td>{{ c.policy.policy_number }}</td>
+                            <td>R$ {{ c.base_premium }}</td>
+                            <td>{{ c.insurer_rate }}%</td>
+                            <td>R$ {{ c.insurer_amount }}</td>
+                            <td>
+                                <span class="badge {% if c.status == 'received' %}bg-success{% elif c.status == 'paid' %}bg-primary{% else %}bg-warning{% endif %}">
+                                    {{ c.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ c.reference_date|date:"d/m/Y" }}</td>
+                            <td>
+                                <a href="{% url 'commissions:commission_detail' pk=c.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="feather-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">Nenhuma comissão encontrada.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if is_paginated %}
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

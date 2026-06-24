@@ -1,0 +1,79 @@
+{% extends "base_app.html" %}
+
+{% block title %}Negociações{% endblock %}
+{% block page_title %}Negociações{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <form class="d-flex gap-2" method="get">
+            <select name="status" class="form-select form-select-sm" style="width:auto;">
+                <option value="">Todos status</option>
+                <option value="open" {% if request.GET.status == 'open' %}selected{% endif %}>Aberto</option>
+                <option value="won" {% if request.GET.status == 'won' %}selected{% endif %}>Ganho</option>
+                <option value="lost" {% if request.GET.status == 'lost' %}selected{% endif %}>Perdido</option>
+            </select>
+            <select name="pipeline" class="form-select form-select-sm" style="width:auto;">
+                <option value="">Todos pipelines</option>
+                {% for p in pipelines %}
+                <option value="{{ p.pk }}" {% if request.GET.pipeline == p.pk|stringformat:"d" %}selected{% endif %}>{{ p.name }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-sm btn-outline-primary" type="submit">Filtrar</button>
+        </form>
+        <div class="d-flex gap-2">
+            <a href="{% url 'crm:kanban' %}" class="btn btn-sm btn-outline-primary"><i class="feather-trello me-1"></i>Kanban</a>
+            <a href="{% url 'crm:deal_create' %}" class="btn btn-sm btn-primary"><i class="feather-plus me-1"></i>Nova</a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Cliente</th>
+                            <th>Etapa</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                            <th>Previsão</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in deals %}
+                        <tr>
+                            <td><a href="{% url 'crm:deal_detail' pk=d.pk %}">{{ d.title }}</a></td>
+                            <td>{{ d.client.name|default:"-" }}</td>
+                            <td>
+                                {% if d.stage %}
+                                <span class="badge" style="background:{{ d.stage.color }};">{{ d.stage.name }}</span>
+                                {% endif %}
+                            </td>
+                            <td>R$ {{ d.estimated_value }}</td>
+                            <td>
+                                <span class="badge {% if d.status == 'won' %}bg-success{% elif d.status == 'lost' %}bg-danger{% else %}bg-primary{% endif %}">
+                                    {{ d.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ d.expected_close_date|default:"-"|date:"d/m/Y" }}</td>
+                            <td>
+                                <a href="{% url 'crm:deal_update' pk=d.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="feather-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">Nenhuma negociação encontrada.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

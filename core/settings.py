@@ -30,6 +30,11 @@ INSTALLED_APPS = [
     'claims',
     'documents',
     'partners',
+    'commissions',
+    'crm',
+    'notifications',
+    'ai_agents',
+    'reports',
 ]
 
 MIDDLEWARE = [

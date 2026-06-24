@@ -3066,144 +3066,144 @@ flowchart LR
 
 ### Sprint 17 — Comissões e Repasses
 **Objetivo:** financeiro de comissões.
-- [ ] App `commissions`: models `Commission` e `CommissionSplit`
-- [ ] `services.py`: cálculo da comissão na geração da apólice
-- [ ] Geração de repasses por agente/produtor
-- [ ] Validação: soma de repasses ≤ comissão recebida
-- [ ] Telas de acompanhamento de comissões/repasses
+- [x] App `commissions`: models `Commission` e `CommissionSplit`
+- [x] `services.py`: cálculo da comissão na geração da apólice
+- [x] Geração de repasses por agente/produtor
+- [x] Validação: soma de repasses ≤ comissão recebida
+- [x] Telas de acompanhamento de comissões/repasses
 
 **Entrega:** comissões e repasses calculados e visíveis.
 
 ### Sprint 18 — CRM (Grid + Kanban)
 **Objetivo:** funil de vendas.
-- [ ] App `crm`: models `Pipeline`, `Stage`, `Deal`, `DealStageHistory`
-- [ ] CRUD de pipelines/etapas (nome, cor, ordem, won/lost)
-- [ ] Visualização **Kanban** com drag-and-drop (endpoint de mudança de etapa + CSRF)
-- [ ] Registro de `DealStageHistory` na mudança
-- [ ] Visualização **grid** com filtros
-- [ ] Vínculo com cliente/produtor/proposta
+- [x] App `crm`: models `Pipeline`, `Stage`, `Deal`, `DealStageHistory`
+- [x] CRUD de pipelines/etapas (nome, cor, ordem, won/lost)
+- [x] Visualização **Kanban** com drag-and-drop (endpoint de mudança de etapa + CSRF)
+- [x] Registro de `DealStageHistory` na mudança
+- [x] Visualização **grid** com filtros
+- [x] Vínculo com cliente/produtor/proposta
 
 **Entrega:** negociações em grid e Kanban com histórico de etapa.
 
 ### Sprint 19 — Celery, Beat e Notificações
 **Objetivo:** infraestrutura assíncrona e avisos in-app.
-- [ ] Configurar `django-celery-beat` (DatabaseScheduler) e `django-celery-results`
-- [ ] Instalar e configurar `dj-celery-panel` no admin
-- [ ] App `notifications`: model `Notification` + endpoint `/notifications/unread/` (polling)
-- [ ] Sino no topbar com contador e dropdown
-- [ ] Migrar envio de e-mails (inclui reset) para task assíncrona
+- [x] Configurar `django-celery-beat` (DatabaseScheduler) e `django-celery-results`
+- [x] Instalar e configurar `dj-celery-panel` no admin
+- [x] App `notifications`: model `Notification` + endpoint `/notifications/unread/` (polling)
+- [x] Sino no topbar com contador e dropdown
+- [x] Migrar envio de e-mails (inclui reset) para task assíncrona
 
 **Entrega:** tasks visíveis no admin; notificações in-app por polling.
 
 ### Sprint 20 — Renovações
 **Objetivo:** ciclo de renovação automatizado.
-- [ ] Model `Renewal` + CRUD/lista com filtros
-- [ ] Task Beat `check_renewals_due` (cria/atualiza renovações por vencimento)
-- [ ] Task Beat `expire_policies`
-- [ ] Notificação de renovações próximas
-- [ ] Renovar gera nova apólice e atualiza status
+- [x] Model `Renewal` + CRUD/lista com filtros
+- [x] Task Beat `check_renewals_due` (cria/atualiza renovações por vencimento)
+- [x] Task Beat `expire_policies`
+- [x] Notificação de renovações próximas
+- [x] Renovar gera nova apólice e atualiza status
 
 **Entrega:** renovações detectadas, notificadas e processáveis.
 
 ### Sprint 21 — IA para Resumos
 **Objetivo:** resumos assíncronos por IA.
-- [ ] App `ai_agents`: `tools.py` com `build_tenant_tools(brokerage)`
-- [ ] Summary Agent (LangGraph `StateGraph`): load → fetch → prompt → generate → persist
-- [ ] Tasks `generate_*_summary` para cliente/apólice/sinistro/proposta/negociação
-- [ ] Campos `ai_summary`/`ai_summary_status` e fluxo de UI (loading + aviso)
-- [ ] Notificação ao concluir + exibição do resumo na entidade
-- [ ] Fixar versões: `langchain>=1.0`, `langgraph>=1.0`, `openai>=2.0`
+- [x] App `ai_agents`: `tools.py` com `build_tenant_tools(brokerage)`
+- [x] Summary Agent (LangGraph `StateGraph`): load → fetch → prompt → generate → persist
+- [x] Tasks `generate_*_summary` para cliente/apólice/sinistro/proposta/negociação
+- [x] Campos `ai_summary`/`ai_summary_status` e fluxo de UI (loading + aviso)
+- [x] Notificação ao concluir + exibição do resumo na entidade
+- [x] Fixar versões: `langchain>=1.0`, `langgraph>=1.0`, `openai>=2.0`
 
 **Entrega:** "Resumir com IA" funcionando para todas as entidades.
 
 ### Sprint 22 — Chat com IA
 **Objetivo:** chat com streaming e tools de tenant.
-- [ ] Models `ChatSession` e `ChatMessage` (por usuário, tenant-aware)
-- [ ] Tela de chat (menu lateral) com sidebar de sessões (criar/renomear/excluir)
-- [ ] Chat Agent (tool-calling) com `build_tenant_tools`
-- [ ] Streaming via `StreamingHttpResponse` (SSE) + `EventSource`
-- [ ] Renderização de Markdown → HTML (com sanitização)
-- [ ] Persistência do histórico por sessão
+- [x] Models `ChatSession` e `ChatMessage` (por usuário, tenant-aware)
+- [x] Tela de chat (menu lateral) com sidebar de sessões (criar/renomear/excluir)
+- [x] Chat Agent (tool-calling) com `build_tenant_tools`
+- [x] Streaming via `StreamingHttpResponse` (SSE) + `EventSource`
+- [x] Renderização de Markdown → HTML (com sanitização)
+- [x] Persistência do histórico por sessão
 
 **Entrega:** chat responde sobre a carteira do tenant com streaming.
 
 ### Sprint 23 — Dashboard
 **Objetivo:** visão analítica.
-- [ ] App `dashboard`: agregações por tenant
-- [ ] Cards de KPIs (clientes, apólices, propostas, sinistros, renovações, comissões)
-- [ ] **Gráfico de funil** de negociações (níveis = etapas)
-- [ ] Gráficos: apólices por ramo, prêmio/comissão por mês, sinistros por status, top seguradoras
-- [ ] Filtro de período afetando todos os gráficos
-- [ ] Bloco de insights
+- [x] App `dashboard`: agregações por tenant
+- [x] Cards de KPIs (clientes, apólices, propostas, sinistros, renovações, comissões)
+- [x] **Gráfico de funil** de negociações (níveis = etapas)
+- [x] Gráficos: apólices por ramo, prêmio/comissão por mês, sinistros por status, top seguradoras
+- [x] Filtro de período afetando todos os gráficos
+- [x] Bloco de insights
 
 **Entrega:** dashboard completo com funil e gráficos.
 
 ### Sprint 24 — Relatórios (PDF/CSV)
 **Objetivo:** exportações.
-- [ ] App `reports`: telas e menu de relatórios
-- [ ] Geração PDF com ReportLab/PyPDF (cabeçalho da corretora)
-- [ ] Exportação CSV
-- [ ] Relatórios: carteira, propostas, apólices, sinistros, renovações, comissões, seguradoras, produtividade
-- [ ] PDFs pesados via Celery + notificação ao concluir
+- [x] App `reports`: telas e menu de relatórios
+- [x] Geração PDF com ReportLab/PyPDF (cabeçalho da corretora)
+- [x] Exportação CSV
+- [x] Relatórios: carteira, propostas, apólices, sinistros, renovações, comissões, seguradoras, produtividade
+- [x] PDFs pesados via Celery + notificação ao concluir
 
 **Entrega:** relatórios exportáveis em PDF e CSV.
 
 ### Sprint 25 — Landing Page
 **Objetivo:** aquisição.
-- [ ] Landing pública na raiz (`/`), responsiva, com DS
-- [ ] Seção de planos (Free ativo; pagos "Em breve")
-- [ ] CTAs para cadastro e login
-- [ ] Copy direcionada às personas
+- [x] Landing pública na raiz (`/`), responsiva, com DS
+- [x] Seção de planos (Free ativo; pagos "Em breve")
+- [x] CTAs para cadastro e login
+- [x] Copy direcionada às personas
 
 **Entrega:** landing em `scsi.digital` convertendo em cadastro.
 
 ### Sprint 26 — Documentação MKDocs
 **Objetivo:** documentação técnica.
-- [ ] Configurar MKDocs (Material) com suporte a Mermaid
-- [ ] Criar documentos obrigatórios (seção 41.2)
-- [ ] Diagramas de arquitetura/ER/fluxos em Mermaid
-- [ ] (Opcional) servir docs em container
+- [x] Configurar MKDocs (Material) com suporte a Mermaid
+- [x] Criar documentos obrigatórios (seção 41.2)
+- [x] Diagramas de arquitetura/ER/fluxos em Mermaid
+- [x] (Opcional) servir docs em container
 
 **Entrega:** documentação navegável com diagramas.
 
 ### Sprint 27 — Deploy com Docker Swarm
 **Objetivo:** produção.
-- [ ] Preparar VPS Ubuntu (update, usuário, firewall, Docker)
-- [ ] `docker swarm init` + rede `traefik_public`
-- [ ] DNS Cloudflare para `scsi.digital`
-- [ ] `docker-stack.yml` com Traefik + app + db + rabbitmq + redis + worker + beat
-- [ ] Deploy, `migrate`, `collectstatic`, `createsuperuser`
-- [ ] Validar SSL (Let's Encrypt) e streaming SSE atrás do proxy
+- [x] Preparar VPS Ubuntu (update, usuário, firewall, Docker)
+- [x] `docker swarm init` + rede `traefik_public`
+- [x] DNS Cloudflare para `scsi.digital`
+- [x] `docker-stack.yml` com Traefik + app + db + rabbitmq + redis + worker + beat
+- [x] Deploy, `migrate`, `collectstatic`, `createsuperuser`
+- [x] Validar SSL (Let's Encrypt) e streaming SSE atrás do proxy
 
 **Entrega:** sistema em produção com TLS no domínio.
 
 ### Sprint 28 — Ajustes Finais
 **Objetivo:** estabilização e polimento.
-- [ ] Revisão de isolamento por tenant em todas as views (auditoria de `get_queryset`)
-- [ ] Otimização de queries (`select_related`/`prefetch_related`, índices)
-- [ ] Páginas 404/500 customizadas e mensagens de erro/sucesso
-- [ ] Modais de confirmação para ações destrutivas
-- [ ] Revisão final do Design System em todas as telas (responsivo)
-- [ ] Configurar backups (pg_dump + mídia) e logs/monitoramento
+- [x] Revisão de isolamento por tenant em todas as views (auditoria de `get_queryset`)
+- [x] Otimização de queries (`select_related`/`prefetch_related`, índices)
+- [x] Páginas 404/500 customizadas e mensagens de erro/sucesso
+- [x] Modais de confirmação para ações destrutivas
+- [x] Revisão final do Design System em todas as telas (responsivo)
+- [x] Configurar backups (pg_dump + mídia) e logs/monitoramento
 
 **Entrega:** sistema estável, seguro, responsivo e pronto para uso real.
 
 ### Sprint 29 — Comando de Seed de Dados de Demonstração
 **Objetivo:** popular a base com dados fake diversos para demonstrações e QA visual (F31, seção 46.1). Depende de todas as models de domínio existirem — executável após a Sprint 24; listada por último por ser ferramenta de apoio.
-- [ ] Adicionar `Faker` (locale `pt_BR`) ao `requirements.txt`
-- [ ] Criar `base/management/commands/seed_demo.py` com flags `--brokerages/--flush/--seed/--with-files/--force`
-- [ ] Guard de segurança: abortar se `DEBUG=False` sem `--force`
-- [ ] Criar N corretoras + planos/assinaturas + usuários em todos os roles
-- [ ] Seed de catálogos: seguradoras e ramos por corretora
-- [ ] Seed de parceiros: agentes e produtores (pessoa/empresa; produtor sob agente e direto)
-- [ ] Seed de clientes PF/PJ com `created_at` variados
-- [ ] Seed de propostas (todos os status) + itens cobertos (todos os tipos)
-- [ ] Seed de apólices (active/expired/canceled/renewed) com vigências variadas + comissões + repasses
-- [ ] Seed de sinistros (todos os status), endossos (todos os tipos) e renovações (a vencer/vencidas/renovadas/perdidas)
-- [ ] Seed de CRM: pipelines/etapas + deals em todas as etapas (open/won/lost) + `DealStageHistory`
-- [ ] Seed de notificações (lidas/não lidas), sessões/mensagens de chat e `ai_summary` fake (sem chamar OpenAI)
-- [ ] Sobrescrever `created_at` e datas de negócio cobrindo passado/presente/futuro; envolver em transação + `bulk_create`
-- [ ] Documentar uso em `docs/local-dev.md`
+- [x] Adicionar `Faker` (locale `pt_BR`) ao `requirements.txt`
+- [x] Criar `base/management/commands/seed_demo.py` com flags `--brokerages/--flush/--seed/--with-files/--force`
+- [x] Guard de segurança: abortar se `DEBUG=False` sem `--force`
+- [x] Criar N corretoras + planos/assinaturas + usuários em todos os roles
+- [x] Seed de catálogos: seguradoras e ramos por corretora
+- [x] Seed de parceiros: agentes e produtores (pessoa/empresa; produtor sob agente e direto)
+- [x] Seed de clientes PF/PJ com `created_at` variados
+- [x] Seed de propostas (todos os status) + itens cobertos (todos os tipos)
+- [x] Seed de apólices (active/expired/canceled/renewed) com vigências variadas + comissões + repasses
+- [x] Seed de sinistros (todos os status), endossos (todos os tipos) e renovações (a vencer/vencidas/renovadas/perdidas)
+- [x] Seed de CRM: pipelines/etapas + deals em todas as etapas (open/won/lost) + `DealStageHistory`
+- [x] Seed de notificações (lidas/não lidas), sessões/mensagens de chat e `ai_summary` fake (sem chamar OpenAI)
+- [x] Sobrescrever `created_at` e datas de negócio cobrindo passado/presente/futuro; envolver em transação + `bulk_create`
+- [x] Documentar uso em `docs/local-dev.md`
 
 **Entrega:** `python manage.py seed_demo` gera um ambiente de demonstração rico, isolado por tenant e com cenários diversos em todas as entidades.
 

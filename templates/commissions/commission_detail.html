@@ -1,0 +1,124 @@
+{% extends "base_app.html" %}
+
+{% block title %}Comissão #{{ commission.pk }}{% endblock %}
+{% block page_title %}Comissão #{{ commission.pk }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">Detalhes da Comissão</h6>
+                    <table class="table table-borderless mb-0">
+                        <tr>
+                            <th style="width:200px">Apólice</th>
+                            <td>{{ commission.policy.policy_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Prêmio Base</th>
+                            <td>R$ {{ commission.base_premium }}</td>
+                        </tr>
+                        <tr>
+                            <th>Taxa Seguradora</th>
+                            <td>{{ commission.insurer_rate }}%</td>
+                        </tr>
+                        <tr>
+                            <th>Valor Recebido</th>
+                            <td class="fw-bold text-success">R$ {{ commission.insurer_amount }}</td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>
+                                <span class="badge {% if commission.status == 'received' %}bg-success{% elif commission.status == 'paid' %}bg-primary{% else %}bg-warning{% endif %}">
+                                    {{ commission.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Data de Referência</th>
+                            <td>{{ commission.reference_date|date:"d/m/Y" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h6 class="fw-bold mb-0">Repasses</h6>
+                    <small class="text-muted">Total: R$ {{ split_total }}</small>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for s in splits %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <span class="badge bg-secondary me-1">{{ s.get_beneficiary_type_display }}</span>
+                                    {% if s.agent %}{{ s.agent.name }}{% endif %}
+                                    {% if s.producer %}{{ s.producer.name }}{% endif %}
+                                </div>
+                                <div>
+                                    <span class="fw-bold">R$ {{ s.amount }}</span>
+                                    <span class="badge {% if s.status == 'paid' %}bg-success{% else %}bg-warning{% endif %} ms-1">
+                                        {{ s.get_status_display }}
+                                    </span>
+                                </div>
+                            </div>
+                            <small class="text-muted">Taxa: {{ s.rate }}%</small>
+                        </div>
+                        {% empty %}
+                        <div class="list-group-item text-center text-muted py-3">
+                            Nenhum repasse registrado.
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <button class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#addSplitModal">
+                        <i class="feather-plus me-1"></i>Adicionar Repasse
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="{% url 'commissions:commission_list' %}" class="btn btn-outline-secondary">
+            <i class="feather-arrow-left me-1"></i>Voltar
+        </a>
+    </div>
+</div>
+
+<!-- Modal: Add Split -->
+<div class="modal fade" id="addSplitModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'commissions:split_create' commission_pk=commission.pk %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h6 class="modal-title fw-bold">Novo Repasse</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    {% for field in split_form %}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="text-danger small">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base_app.html" %}
+
+{% block title %}Pipelines{% endblock %}
+{% block page_title %}Pipelines{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div></div>
+        <a href="{% url 'crm:pipeline_create' %}" class="btn btn-primary">
+            <i class="feather-plus me-1"></i>Novo Pipeline
+        </a>
+    </div>
+
+    <div class="row g-3">
+        {% for p in pipelines %}
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="fw-bold">{{ p.name }}</h6>
+                    {% if p.is_default %}<span class="badge bg-primary mb-2">Padrão</span>{% endif %}
+                    <p class="text-muted small mb-2">{{ p.stages.count }} etapas</p>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'crm:kanban' %}?pipeline={{ p.pk }}" class="btn btn-sm btn-outline-primary">Kanban</a>
+                        <a href="{% url 'crm:pipeline_update' pk=p.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                        <a href="{% url 'crm:stage_create' pipeline_pk=p.pk %}" class="btn btn-sm btn-outline-success">+ Etapa</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center text-muted py-5">
+            <p>Nenhum pipeline encontrado.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

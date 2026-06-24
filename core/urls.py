@@ -15,7 +15,16 @@ urlpatterns = [
     path('sinistros/', include('claims.urls', namespace='claims')),
     path('documentos/', include('documents.urls', namespace='documents')),
     path('parceiros/', include('partners.urls', namespace='partners')),
+    path('comissoes/', include('commissions.urls', namespace='commissions')),
+    path('crm/', include('crm.urls', namespace='crm')),
+    path('notifications/', include('notifications.urls', namespace='notifications')),
+    path('renovacoes/', include('insurance.urls_renewals', namespace='insurance_renewals')),
+    path('ia/', include('ai_agents.urls', namespace='ai_agents')),
+    path('relatorios/', include('reports.urls', namespace='reports')),
 ]
+
+handler404 = 'django.views.defaults.page_not_found'
+handler500 = 'django.views.defaults.server_error'
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

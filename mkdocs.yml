@@ -1,0 +1,35 @@
+site_name: SCSI Docs
+site_description: Documentação do SCSI - Sistema de Gestão para Corretora de Seguros Inteligente
+theme:
+  name: material
+  palette:
+    primary: '#3454d1'
+    accent: '#3454d1'
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Início: index.md
+  - Arquitetura: architecture.md
+  - Multi Tenant: multi-tenant.md
+  - Modelo de Domínio: domain-model.md
+  - Permissões: permissions.md
+  - Mídia Protegida: protected-media.md
+  - Agentes de IA: ai-agents.md
+  - Celery Tasks: celery-tasks.md
+  - Variáveis de Ambiente: env-vars.md
+  - Desenvolvimento Local: local-dev.md
+  - Deploy: deploy.md
+  - Backup: backup.md

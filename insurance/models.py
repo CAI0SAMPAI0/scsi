@@ -179,3 +179,42 @@ class CoveredItem(models.Model):
 
     def __str__(self):
         return f'{self.get_item_type_display()} — {self.description}'
+
+
+class Renewal(TenantAwareModel):
+    class Status(models.TextChoices):
+        PENDING      = 'pending',      'Pendente'
+        IN_PROGRESS  = 'in_progress',  'Em Andamento'
+        RENEWED      = 'renewed',      'Renovada'
+        LOST         = 'lost',         'Perdida'
+        NOT_RENEWED  = 'not_renewed',  'Não Renovada'
+
+    policy = models.ForeignKey(
+        Policy, on_delete=models.CASCADE,
+        related_name='renewals',
+        verbose_name='apólice original',
+    )
+    new_policy = models.ForeignKey(
+        Policy, on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='renewed_from',
+        verbose_name='nova apólice',
+    )
+    status = models.CharField(
+        'status', max_length=15,
+        choices=Status.choices, default=Status.PENDING,
+    )
+    due_date = models.DateField('data de vencimento')
+    notes = models.TextField('observações', blank=True)
+
+    class Meta:
+        verbose_name = 'renovação'
+        verbose_name_plural = 'renovações'
+        ordering = ('due_date',)
+        indexes = [
+            models.Index(fields=['brokerage', 'status']),
+            models.Index(fields=['brokerage', 'due_date']),
+        ]
+
+    def __str__(self):
+        return f'Renovação {self.policy} — {self.get_status_display()}'

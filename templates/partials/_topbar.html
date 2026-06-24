@@ -18,64 +18,106 @@
                     <i class="feather-arrow-right"></i>
                 </a>
             </div>
-            <!-- Page title breadcrumb for desktop -->
-            <div class="d-none d-md-flex align-items-center">
-                <span class="text-muted small">{% block header_subtitle %}{% endblock %}</span>
-            </div>
         </div>
 
         <!-- Right: notifications + user dropdown -->
         <div class="header-right ms-auto">
             <div class="d-flex align-items-center gap-3">
-                <!-- Notifications (placeholder) -->
-                <div class="dropdown nxl-h-item">
-                    <a href="#" class="nxl-head-link me-0" data-bs-toggle="dropdown">
-                        <i class="feather-bell"></i>
-                        <span class="badge bg-danger nxl-h-badge">0</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-notifications-menu">
-                        <div class="d-flex justify-content-between align-items-center notifications-head p-3">
-                            <h6 class="m-0">Notificações</h6>
-                        </div>
-                        <div class="p-3 text-center text-muted small">
-                            <i class="feather-bell-off mb-2 d-block"></i>
-                            Sem novas notificações
+                <!-- Notifications -->
+                <div class="nxl-h-item">
+                    <div class="dropdown nxl-h-item">
+                        <a href="#" class="nxl-head-link me-0" data-bs-toggle="dropdown" id="notif-bell">
+                            <i class="feather-bell"></i>
+                            <span class="badge bg-danger nxl-h-badge" id="notif-count" style="display:none;">0</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-notifications-menu" style="width:320px;">
+                            <div class="d-flex justify-content-between align-items-center notifications-head p-3">
+                                <h6 class="m-0">Notificações</h6>
+                                <button class="btn btn-sm btn-link text-decoration-none p-0" id="mark-all-read">Marcar todas como lidas</button>
+                            </div>
+                            <div class="list-group list-group-flush" id="notif-list" style="max-height:400px;overflow-y:auto;">
+                                <div class="list-group-item text-center text-muted py-3">
+                                    <small>Carregando...</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- User dropdown -->
-                <div class="dropdown nxl-h-item">
-                    <a href="#" data-bs-toggle="dropdown" class="nxl-head-link me-0">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="avatar-text avatar-md bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-semibold" style="width:36px;height:36px;font-size:.85rem;">
-                                {{ request.user.initials }}
+                <div class="nxl-h-item">
+                    <div class="dropdown nxl-h-item">
+                        <a href="#" data-bs-toggle="dropdown" class="nxl-head-link me-0">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar-text avatar-md bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-semibold" style="width:36px;height:36px;font-size:.85rem;">
+                                    {{ request.user.initials }}
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown">
-                        <!-- User info -->
-                        <div class="px-3 py-3 border-bottom">
-                            <h6 class="mb-0">{{ request.user.get_full_name }}</h6>
-                            <small class="text-muted">{{ request.user.email }}</small><br>
-                            <small class="badge bg-primary mt-1">{{ request.user.role_display }}</small>
-                        </div>
-                        <a href="{% url 'accounts:profile' %}" class="dropdown-item">
-                            <i class="feather-user me-2"></i>Meu Perfil
                         </a>
-                        <a href="{% url 'tenants:my_plan' %}" class="dropdown-item">
-                            <i class="feather-credit-card me-2"></i>Meu Plano
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <form method="post" action="{% url 'accounts:logout' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="dropdown-item text-danger">
-                                <i class="feather-log-out me-2"></i>Sair
-                            </button>
-                        </form>
+                        <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown">
+                            <div class="px-3 py-3 border-bottom">
+                                <h6 class="mb-0">{{ request.user.get_full_name }}</h6>
+                                <small class="text-muted">{{ request.user.email }}</small><br>
+                                <small class="badge bg-primary mt-1">{{ request.user.role_display }}</small>
+                            </div>
+                            <a href="{% url 'accounts:profile' %}" class="dropdown-item">
+                                <i class="feather-user me-2"></i>Meu Perfil
+                            </a>
+                            <a href="{% url 'tenants:my_plan' %}" class="dropdown-item">
+                                <i class="feather-credit-card me-2"></i>Meu Plano
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <form method="post" action="{% url 'accounts:logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="feather-log-out me-2"></i>Sair
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </header>
+
+<script>
+(function(){
+    function loadNotifications(){
+        fetch('{% url "notifications:unread" %}')
+            .then(r=>r.json())
+            .then(d=>{
+                const badge = document.getElementById('notif-count');
+                const list = document.getElementById('notif-list');
+                if(d.count > 0){
+                    badge.style.display = '';
+                    badge.textContent = d.count;
+                } else {
+                    badge.style.display = 'none';
+                }
+                if(d.notifications.length === 0){
+                    list.innerHTML = '<div class="list-group-item text-center text-muted py-3"><i class="feather-bell-off mb-2 d-block"></i><small>Sem novas notificações</small></div>';
+                    return;
+                }
+                list.innerHTML = d.notifications.map(n => {
+                    const icon = n.type === 'ai_summary' ? 'cpu' : n.type === 'report' ? 'file-text' : n.type === 'renewal' ? 'refresh-cw' : 'bell';
+                    const href = n.url ? `onclick="fetch('{% url 'notifications:mark_read_all' %}/${n.id}',{method:'POST'}).then(()=>window.location='${n.url}')"` : `onclick="fetch('{% url 'notifications:mark_read_all' %}/${n.id}',{method:'POST'})"`;
+                    return `<a href="javascript:void(0);" class="list-group-item list-group-item-action" ${href}>
+                        <div class="d-flex gap-2">
+                            <i class="feather-${icon} text-primary mt-1"></i>
+                            <div><div class="fw-semibold small">${n.title}</div><small class="text-muted">${n.message}</small><br><small class="text-muted">${n.created_at}</small></div>
+                        </div>
+                    </a>`;
+                }).join('');
+            }).catch(()=>{});
+    }
+    loadNotifications();
+    setInterval(loadNotifications, 30000);
+
+    document.getElementById('mark-all-read')?.addEventListener('click', function(e){
+        e.preventDefault();
+        fetch('{% url "notifications:mark_read_all" %}', {method:'POST'})
+            .then(()=>loadNotifications());
+    });
+})();
+</script>

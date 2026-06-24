@@ -36,4 +36,7 @@ def generate_policy_from_proposal(proposal, policy_number, brokerage, commission
         proposal.status = 'converted'
         proposal.save(update_fields=['status'])
 
+        from commissions.services import calculate_commission
+        calculate_commission(policy)
+
     return policy

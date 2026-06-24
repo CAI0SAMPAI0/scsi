@@ -70,7 +70,7 @@ class ProfileView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-# ── Dashboard placeholder ─────────────────────────────────────────────────────
+# ── Dashboard ─────────────────────────────────────────────────────────────
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard.html'
@@ -81,6 +81,69 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         if not request.tenant:
             return redirect('tenants:onboarding')
         return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        from django.db.models import Count, Sum, Q
+        from datetime import date, timedelta
+        from clients.models import Client
+        from insurance.models import Policy, Proposal, Renewal
+        from claims.models import Claim
+        from commissions.models import Commission
+        from crm.models import Deal, Stage
+
+        tenant = self.request.tenant
+        today = date.today()
+        thirty_days = today - timedelta(days=30)
+
+        ctx['client_count'] = Client.objects.filter(brokerage=tenant, is_active=True).count()
+        ctx['policy_count'] = Policy.objects.filter(brokerage=tenant, status='active').count()
+        ctx['proposal_count'] = Proposal.objects.filter(brokerage=tenant).exclude(status='converted').count()
+        ctx['claim_count'] = Claim.objects.filter(brokerage=tenant).exclude(status='closed').count()
+
+        renewals_30 = Renewal.objects.filter(
+            brokerage=tenant, status='pending',
+            due_date__lte=today + timedelta(days=30),
+        )
+        ctx['renewal_count'] = renewals_30.count()
+
+        total_premium = Policy.objects.filter(
+            brokerage=tenant, status='active',
+            start_date__gte=thirty_days,
+        ).aggregate(total=Sum('total_premium'))['total'] or 0
+        ctx['total_premium'] = total_premium
+
+        total_commission = Commission.objects.filter(
+            brokerage=tenant, status__in=['received', 'paid'],
+        ).aggregate(total=Sum('insurer_amount'))['total'] or 0
+        ctx['total_commission'] = total_commission
+
+        pending_commission = Commission.objects.filter(
+            brokerage=tenant, status='pending',
+        ).aggregate(total=Sum('insurer_amount'))['total'] or 0
+        ctx['pending_commission'] = pending_commission
+
+        # CRM Funnel
+        pipeline = Deal.objects.filter(brokerage=tenant).values('stage__name', 'stage__color').annotate(
+            count=Count('id'), total=Sum('estimated_value')
+        ).order_by('stage__order')
+        ctx['funnel_data'] = list(pipeline)
+
+        # Policies by line of business
+        policies_by_lob = Policy.objects.filter(
+            brokerage=tenant, status='active',
+        ).values('line_of_business__name').annotate(
+            count=Count('id')
+        ).order_by('-count')[:5]
+        ctx['policies_by_lob'] = list(policies_by_lob)
+
+        # Claims by status
+        claims_by_status = Claim.objects.filter(
+            brokerage=tenant,
+        ).values('status').annotate(count=Count('id'))
+        ctx['claims_by_status'] = list(claims_by_status)
+
+        return ctx
 
 
 # ── Members (Sprints 7) ───────────────────────────────────────────────────────

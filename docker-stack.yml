@@ -1,0 +1,89 @@
+version: '3.9'
+
+services:
+  traefik:
+    image: traefik:v3.1
+    command:
+      - --providers.docker.swarmmode=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --certificatesresolvers.le.acme.tlschallenge=true
+      - --certificatesresolvers.le.acme.email=${ACME_EMAIL}
+      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
+    networks: [traefik_public]
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  app:
+    image: ghcr.io/pycodebr/scsi_v1:latest
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    env_file: .env
+    volumes:
+      - media_data:/app/media
+      - static_data:/app/staticfiles
+    networks: [traefik_public, internal]
+    deploy:
+      replicas: 2
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.scsi.rule=Host(`scsi.digital`)
+        - traefik.http.routers.scsi.entrypoints=websecure
+        - traefik.http.routers.scsi.tls.certresolver=le
+        - traefik.http.services.scsi.loadbalancer.server.port=8000
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks: [internal]
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    networks: [internal]
+
+  redis:
+    image: redis:7
+    networks: [internal]
+
+  celery_worker:
+    image: ghcr.io/pycodebr/scsi_v1:latest
+    command: celery -A core worker -l info
+    env_file: .env
+    volumes:
+      - media_data:/app/media
+    networks: [internal]
+    deploy:
+      replicas: 2
+
+  celery_beat:
+    image: ghcr.io/pycodebr/scsi_v1:latest
+    command: celery -A core beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    env_file: .env
+    networks: [internal]
+
+networks:
+  traefik_public:
+    external: true
+  internal:
+
+volumes:
+  pg_data:
+  media_data:
+  static_data:
+  letsencrypt:

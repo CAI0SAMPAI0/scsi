@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}SCSI — Sistema de Gestão para Corretoras de Seguros{% endblock %}
+
+{% block body %}
+<!-- Navbar -->
+<nav class="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+                    <i class="feather-shield text-white text-sm"></i>
+                </div>
+                <span class="text-xl font-bold text-gray-900">SCSI</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="{% url 'accounts:login' %}" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">Entrar</a>
+                <a href="{% url 'accounts:register' %}" class="px-4 py-2 text-sm font-medium bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">Criar conta grátis</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="pt-32 pb-20 px-4">
+    <div class="max-w-4xl mx-auto text-center">
+        <div class="inline-block px-4 py-1.5 bg-primary-50 text-primary-600 text-sm font-medium rounded-full mb-6">
+            Gestão inteligente para corretoras
+        </div>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+            Centralize toda a operação da sua corretora em <span class="text-primary-500">um só lugar</span>
+        </h1>
+        <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            CRM, apólices, comissões, renovações e inteligência artificial — tudo isolado por corretora, seguro e acessível de qualquer lugar.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'accounts:register' %}" class="px-8 py-3.5 bg-primary-500 text-white font-semibold rounded-xl hover:bg-primary-600 transition-colors text-lg">
+                Criar conta grátis
+            </a>
+            <a href="#features" class="px-8 py-3.5 border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:border-primary-300 hover:text-primary-600 transition-colors text-lg">
+                Saiba mais
+            </a>
+        </div>
+        <p class="text-sm text-gray-400 mt-4">Sem cartão de crédito. Configure em minutos.</p>
+    </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Tudo que sua corretora precisa</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">Do primeiro contato com o lead até a renovação da apólice, com IA integrada.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-4">
+                    <i class="feather-trello text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">CRM com Kanban</h3>
+                <p class="text-sm text-gray-500">Pipeline visual com drag-and-drop. Acompanhe cada negociação do lead à apólice.</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mb-4">
+                    <i class="feather-shield text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">Apólices e Renovações</h3>
+                <p class="text-sm text-gray-500">Gerencie apólices, itens cobertos e renovações com alertas automáticos de vencimento.</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-4">
+                    <i class="feather-dollar-sign text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">Comissões e Repasses</h3>
+                <p class="text-sm text-gray-500">Calcule comissões automaticamente e gerencie repasses para agentes e produtores.</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-xl flex items-center justify-center mb-4">
+                    <i class="feather-cpu text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">IA Integrada</h3>
+                <p class="text-sm text-gray-500">Resumos automáticos de clientes, apólices e sinistros. Chat inteligente sobre sua carteira.</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center mb-4">
+                    <i class="feather-alert-triangle text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">Sinistros e Endossos</h3>
+                <p class="text-sm text-gray-500">Registre sinistros, acompanhe status e emita endossos diretamente no sistema.</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center mb-4">
+                    <i class="feather-bar-chart-2 text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">Dashboard e Relatórios</h3>
+                <p class="text-sm text-gray-500">Métricas em tempo real, funil de vendas e exportações em PDF e CSV.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Plans -->
+<section id="plans" class="py-20">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Planos simples e transparentes</h2>
+            <p class="text-gray-600">Comece grátis. Escale quando precisar.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Free -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border-2 border-primary-500 relative">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary-500 text-white text-xs font-semibold rounded-full">
+                    Popular
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Free</h3>
+                <div class="text-4xl font-bold text-gray-900 mb-1">R$ 0</div>
+                <div class="text-sm text-gray-500 mb-6">para sempre</div>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>Até 3 usuários</li>
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>Até 100 clientes</li>
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>Até 50 apólices</li>
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>CRM Kanban</li>
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>Relatórios básicos</li>
+                </ul>
+                <a href="{% url 'accounts:register' %}" class="block w-full py-3 bg-primary-500 text-white text-center font-semibold rounded-xl hover:bg-primary-600 transition-colors">
+                    Começar grátis
+                </a>
+            </div>
+
+            <!-- Starter -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 opacity-75">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Starter</h3>
+                <div class="text-4xl font-bold text-gray-900 mb-1">R$ 97</div>
+                <div class="text-sm text-gray-500 mb-6">/mês</div>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>Até 10 usuários</li>
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>Até 500 clientes</li>
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>Até 250 apólices</li>
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>Tudo do Free</li>
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>Notificações por e-mail</li>
+                </ul>
+                <button class="block w-full py-3 bg-gray-200 text-gray-500 text-center font-semibold rounded-xl cursor-not-allowed" disabled>
+                    Em breve
+                </button>
+            </div>
+
+            <!-- Pro -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 opacity-75">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Pro</h3>
+                <div class="text-4xl font-bold text-gray-900 mb-1">R$ 297</div>
+                <div class="text-sm text-gray-500 mb-6">/mês</div>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>Usuários ilimitados</li>
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>Clientes ilimitados</li>
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>Apólices ilimitadas</li>
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>Tudo do Starter</li>
+                    <li class="flex items-center gap-2 text-sm text-gray-600"><i class="feather-check text-green-500"></i>IA completa</li>
+                </ul>
+                <button class="block w-full py-3 bg-gray-200 text-gray-500 text-center font-semibold rounded-xl cursor-not-allowed" disabled>
+                    Em breve
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="py-20 bg-primary-500">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold text-white mb-4">Pronto para transformar sua corretora?</h2>
+        <p class="text-primary-100 mb-8 text-lg">Cadastre-se gratuitamente e comece a gerenciar sua operação em minutos.</p>
+        <a href="{% url 'accounts:register' %}" class="inline-block px-8 py-4 bg-white text-primary-600 font-bold rounded-xl hover:bg-gray-100 transition-colors text-lg">
+            Criar conta grátis
+        </a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="py-8 border-t border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
+        &copy; {% now "Y" %} SCSI — Sistema de Gestão para Corretora de Seguros Inteligente.
+    </div>
+</footer>
+{% endblock %}

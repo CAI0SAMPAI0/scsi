@@ -1,10 +1,14 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from accounts import views
+from accounts.views_landing import LandingView
 
 app_name = 'accounts'
 
 urlpatterns = [
+    # Landing
+    path('', LandingView.as_view(), name='landing'),
+
     # Auth
     path('login/', views.EmailLoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
@@ -28,7 +32,7 @@ urlpatterns = [
     ), name='password_reset_complete'),
 
     # Dashboard
-    path('', views.DashboardView.as_view(), name='dashboard'),
+    path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
 
     # Profile
     path('perfil/', views.ProfileView.as_view(), name='profile'),
