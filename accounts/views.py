@@ -112,15 +112,20 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         total_commission = Commission.objects.filter(
             brokerage=tenant, status__in=['received', 'paid'],
         ).aggregate(total=Sum('insurer_amount'))['total'] or 0
-        ctx['total_commission'] = total_commission
+        ctx['total_commission'] = float(total_commission)
 
         # CRM Funnel
         pipeline = Deal.objects.filter(brokerage=tenant).values('stage__name', 'stage__color').annotate(
             count=Count('id'), total=Sum('estimated_value')
         ).order_by('stage__order')
-        funnel_list = list(pipeline)
-        for f in funnel_list:
-            f['total'] = f['total'] or 0
+        funnel_list = []
+        for f in pipeline:
+            funnel_list.append({
+                'stage__name': f['stage__name'],
+                'stage__color': f['stage__color'],
+                'count': int(f['count']),
+                'total': float(f['total'] or 0),
+            })
         ctx['funnel_data'] = funnel_list
 
         # Policies by line of business with colors
@@ -132,6 +137,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         ).order_by('-count')[:6])
         for i, lob in enumerate(policies_by_lob):
             lob['color'] = lob_colors[i % len(lob_colors)]
+            lob['count'] = int(lob['count'])
         ctx['policies_by_lob'] = policies_by_lob
 
         # Top insurers with colors
@@ -143,6 +149,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         ).order_by('-count')[:5])
         for i, ins in enumerate(top_insurers):
             ins['color'] = insurer_colors[i % len(insurer_colors)]
+            ins['count'] = int(ins['count'])
         ctx['top_insurers'] = top_insurers
 
         # Claims by status with colors
@@ -156,6 +163,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         ).values('status').annotate(count=Count('id')))
         for cs in claims_by_status:
             cs['color'] = status_colors.get(cs['status'], '#6c757d')
+            cs['count'] = int(cs['count'])
         ctx['claims_by_status'] = claims_by_status
 
         # Monthly production (last 6 months)
@@ -177,8 +185,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         premiums = [m['premium'] for m in monthly]
         commissions = [m['commission'] for m in monthly]
         ctx['monthly_data'] = monthly
-        ctx['max_premium'] = max(premiums) if premiums else 1
-        ctx['max_commission'] = max(commissions) if commissions else 1
+        ctx['max_premium'] = float(max(premiums)) if premiums else 1
+        ctx['max_commission'] = float(max(commissions)) if commissions else 1
 
         return ctx
 
