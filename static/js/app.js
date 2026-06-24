@@ -21,13 +21,25 @@
       $('.logo-abbr').show();
     }
 
-    // Intercept Duralux toggle clicks to save state
-    $('#menu-mini-button').on('click', function () {
-      localStorage.setItem('nexel-classic-dashboard-menu-mini-theme', 'menu-mini-theme');
-    });
-    $('#menu-expend-button').on('click', function () {
-      localStorage.removeItem('nexel-classic-dashboard-menu-mini-theme');
-    });
+    // Intercept Duralux toggle clicks to toggle class and persist state
+  $('#menu-mini-button').on('click', function () {
+    $('html').addClass('minimenu');
+    $('#menu-mini-button').hide();
+    $('#menu-expend-button').show();
+    $('.logo-full').hide();
+    $('.logo-abbr').show();
+    localStorage.setItem('nexel-classic-dashboard-menu-mini-theme', 'menu-mini-theme');
+    $(window).trigger('resize');
+  });
+  $('#menu-expend-button').on('click', function () {
+    $('html').removeClass('minimenu');
+    $('#menu-expend-button').hide();
+    $('#menu-mini-button').show();
+    $('.logo-full').show();
+    $('.logo-abbr').hide();
+    localStorage.removeItem('nexel-classic-dashboard-menu-mini-theme');
+    $(window).trigger('resize');
+  });
   });
 
   // ── Sidebar scroll persistence ──────────────────────────────────────────

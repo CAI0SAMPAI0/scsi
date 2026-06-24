@@ -229,7 +229,7 @@
                 name: '{{ stage.stage__name|default:"Sem etapa"|escapejs }}',
                 color: '{{ stage.stage__color|default:"#3454d1" }}',
                 count: {{ stage.count }},
-                total: {{ stage.total|default:0 }}
+                total: {{ stage.total_str }}
             }{% if not forloop.last %},{% endif %}{% endfor %}
         ];
 
@@ -238,10 +238,11 @@
             var rows = '';
             for (var i = 0; i < n; i++) {
                 var s = stages[i];
-                var w = Math.max(40, 100 - (i * (60 / n)));
+                // Calculate width to create a funnel shape: wider at top, narrower at bottom
+                var w = Math.max(30, 100 - (i * (100 / n))); // ensures smooth taper
                 rows += '<tr>';
-                rows += '<td style="width:' + w + '%;background:' + s.color + ';color:#fff;padding:10px 14px;font-size:13px;font-weight:600;border-radius:4px 0 0 4px;white-space:nowrap;">' + s.name + '</td>';
-                rows += '<td style="background:' + s.color + ';color:#fff;padding:10px 14px;font-size:12px;font-weight:400;text-align:right;border-radius:0 4px 4px 0;white-space:nowrap;">';
+                rows += '<td style="width:' + w + '%;background:' + s.color + ';color:#fff;padding:8px 12px;font-size:13px;font-weight:600;border-radius:4px 0 0 4px;white-space:nowrap;">' + s.name + '</td>';
+                rows += '<td style="background:' + s.color + ';color:#fff;padding:8px 12px;font-size:12px;font-weight:400;text-align:right;border-radius:0 4px 4px 0;white-space:nowrap;">';
                 rows += s.count + ' deals &middot; R$ ' + s.total.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 rows += '</td></tr>';
             }

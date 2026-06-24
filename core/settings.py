@@ -133,3 +133,11 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+# Fallback to in‑memory broker if redis library is unavailable (development only)
+try:
+    import redis  # noqa: F401
+except Exception:  # pragma: no cover
+    CELERY_BROKER_URL = 'memory://'
+    CELERY_RESULT_BACKEND = 'cache+memory://'
+

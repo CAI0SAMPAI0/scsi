@@ -120,11 +120,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         ).order_by('stage__order')
         funnel_list = []
         for f in pipeline:
+            total_val = float(f['total'] or 0)
             funnel_list.append({
                 'stage__name': f['stage__name'],
                 'stage__color': f['stage__color'],
                 'count': int(f['count']),
-                'total': float(f['total'] or 0),
+                'total_str': str(int(total_val)),
             })
         ctx['funnel_data'] = funnel_list
 

@@ -131,9 +131,12 @@
                     {% else %}
                         <p class="text-muted small">Clique no botão abaixo para gerar um resumo inteligente desta apólice.</p>
                     {% endif %}
-                    <button class="btn btn-outline-primary btn-sm w-100 mt-2" disabled title="Em breve: integração com IA">
-                        <i class="feather-cpu me-1"></i>Resumir com IA
-                    </button>
+                    <form method="post" action="{% url 'ai_agents:trigger_summary' entity_type='policy' entity_id=policy.pk %}" class="mt-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="feather-cpu me-1"></i>Resumir com IA
+                        </button>
+                    </form>
                 </div>
             </div>
 
