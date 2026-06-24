@@ -21,6 +21,24 @@
 
 <!-- Vendors JS -->
 <script src="{% static 'js/vendors.min.js' %}"></script>
+<!-- Feather Icons (replaces <i data-feather="..."> with inline SVG) -->
+<script src="https://unpkg.com/feather-icons@4.29.1/dist/feather.min.js"></script>
+<script>
+document.querySelectorAll('i[class*="feather-"]').forEach(function(el){
+    var m = el.className.match(/feather-([a-z0-9-]+)/);
+    if (m && feather.icons[m[1]]) {
+        el.setAttribute('data-feather', m[1]);
+        el.classList.remove('feather-' + m[1]);
+        var fs = el.style.fontSize;
+        if (fs) {
+            el.style.fontSize = '';
+            el.style.width = fs;
+            el.style.height = fs;
+        }
+    }
+});
+feather.replace();
+</script>
 <!-- SCSI App JS -->
 <script src="{% static 'js/app.js' %}"></script>
 {% block extra_js %}{% endblock %}
