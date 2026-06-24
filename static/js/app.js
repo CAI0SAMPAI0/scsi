@@ -1,109 +1,71 @@
 /**
  * SCSI — app.js
- * Vanilla JS for sidebar toggle, active menu highlights, scroll persistence
+ * Minimal overrides on top of Duralux theme JS.
+ * Sidebar toggle, scroll persistence, active nav, messages auto-dismiss.
  */
 
 (function () {
   'use strict';
 
-  const body = document.body;
-  const nav = document.querySelector('.nxl-navigation');
+  // ── Duralux sidebar toggle uses jQuery + html.minimenu (vendors.min.js).
+  //    We only need to handle localStorage persistence for the state.
 
-  // ── Sidebar mini-mode toggle ──────────────────────────────────────────────
-  const menuMiniBtn = document.getElementById('menu-mini-button');
-  const menuExpBtn  = document.getElementById('menu-expend-button');
+  $(document).ready(function () {
+    // Restore sidebar state from localStorage
+    var savedState = localStorage.getItem('nexel-classic-dashboard-menu-mini-theme');
+    if (savedState === 'menu-mini-theme') {
+      $('html').addClass('minimenu');
+      $('#menu-mini-button').hide();
+      $('#menu-expend-button').show();
+      $('.logo-full').hide();
+      $('.logo-abbr').show();
+    }
 
-  if (menuMiniBtn) {
-    menuMiniBtn.addEventListener('click', () => {
-      body.classList.add('nxl-minimize');
-      menuMiniBtn.style.display = 'none';
-      if (menuExpBtn) menuExpBtn.style.display = 'inline-flex';
-      localStorage.setItem('nxl-minimize', '1');
+    // Intercept Duralux toggle clicks to save state
+    $('#menu-mini-button').on('click', function () {
+      localStorage.setItem('nexel-classic-dashboard-menu-mini-theme', 'menu-mini-theme');
     });
-  }
-
-  if (menuExpBtn) {
-    menuExpBtn.addEventListener('click', () => {
-      body.classList.remove('nxl-minimize');
-      menuExpBtn.style.display = 'none';
-      if (menuMiniBtn) menuMiniBtn.style.display = 'inline-flex';
-      localStorage.removeItem('nxl-minimize');
+    $('#menu-expend-button').on('click', function () {
+      localStorage.removeItem('nexel-classic-dashboard-menu-mini-theme');
     });
-  }
+  });
 
-  // ── Restore sidebar minimize state ────────────────────────────────────────
-  if (localStorage.getItem('nxl-minimize') === '1') {
-    body.classList.add('nxl-minimize');
-    if (menuMiniBtn) menuMiniBtn.style.display = 'none';
-    if (menuExpBtn) menuExpBtn.style.display = 'inline-flex';
-  }
-
-  // ── Sidebar scroll position persistence ───────────────────────────────────
+  // ── Sidebar scroll persistence ──────────────────────────────────────────
+  var nav = document.querySelector('.nxl-navigation .navbar-content');
   if (nav) {
-    const saved = localStorage.getItem('nxl-nav-scroll');
-    if (saved) nav.scrollTop = parseInt(saved, 10);
-
-    nav.addEventListener('scroll', () => {
+    var savedScroll = localStorage.getItem('nxl-nav-scroll');
+    if (savedScroll) nav.scrollTop = parseInt(savedScroll, 10);
+    nav.addEventListener('scroll', function () {
       localStorage.setItem('nxl-nav-scroll', nav.scrollTop);
     });
   }
 
-  // ── Mobile sidebar toggle ─────────────────────────────────────────────────
-  const mobileCollapse = document.getElementById('mobile-collapse');
-  if (mobileCollapse) {
-    mobileCollapse.addEventListener('click', () => {
-      body.classList.toggle('nxl-mob-sidebar-active');
-    });
-  }
-
-  // ── Overlay click closes mobile sidebar ───────────────────────────────────
-  const overlay = document.querySelector('.nxl-overlay');
-  if (overlay) {
-    overlay.addEventListener('click', () => {
-      body.classList.remove('nxl-mob-sidebar-active');
-    });
-  }
-
-  // ── nxl submenu expand ────────────────────────────────────────────────────
-  document.querySelectorAll('.nxl-hasmenu > .nxl-link').forEach(link => {
-    link.addEventListener('click', function (e) {
-      if (!body.classList.contains('nxl-minimize')) {
-        e.preventDefault();
-        const parent = this.closest('.nxl-hasmenu');
-        parent.classList.toggle('active');
-        const submenu = parent.querySelector('.nxl-submenu');
-        if (submenu) {
-          submenu.style.display = parent.classList.contains('active') ? 'block' : 'none';
-        }
-      }
-    });
-  });
-
-  // ── Auto-dismiss Django messages ──────────────────────────────────────────
-  setTimeout(() => {
-    document.querySelectorAll('.alert-dismissible').forEach(el => {
+  // ── Auto-dismiss Django messages ────────────────────────────────────────
+  setTimeout(function () {
+    document.querySelectorAll('.alert-dismissible').forEach(function (el) {
       try {
         if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
           new bootstrap.Alert(el).close();
         } else {
           el.style.display = 'none';
         }
-      } catch(e) {
+      } catch (e) {
         el.style.display = 'none';
       }
     });
   }, 5000);
 
-  // ── Mark active nav item by current URL ───────────────────────────────────
-  const currentPath = window.location.pathname;
-  document.querySelectorAll('.nxl-navbar .nxl-link[href]').forEach(link => {
-    const href = link.getAttribute('href');
+  // ── Active nav item by URL (backup for Duralux) ────────────────────────
+  var currentPath = window.location.pathname;
+  document.querySelectorAll('.nxl-navbar .nxl-link[href]').forEach(function (link) {
+    var href = link.getAttribute('href');
     if (href && href !== '#' && currentPath.startsWith(href)) {
-      link.closest('.nxl-item')?.classList.add('active');
-      const parent = link.closest('.nxl-hasmenu');
+      var item = link.closest('.nxl-item');
+      if (item) item.classList.add('active');
+      var parent = link.closest('.nxl-hasmenu');
       if (parent) {
-        parent.classList.add('active');
-        const sub = parent.querySelector('.nxl-submenu');
+        parent.classList.add('active', 'nxl-trigger');
+        var sub = parent.querySelector('.nxl-submenu');
         if (sub) sub.style.display = 'block';
       }
     }
