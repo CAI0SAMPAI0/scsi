@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body %}
+<!-- Overlay for mobile -->
+<div class="nxl-overlay"></div>
+
+<!-- Sidebar Navigation -->
+{% include "partials/_sidebar.html" %}
+
+<!-- Header -->
+{% include "partials/_topbar.html" %}
+
+<!-- Main Content Wrapper -->
+<div class="nxl-content">
+    <!-- Page Header -->
+    {% block page_header %}
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">{% block page_title %}Dashboard{% endblock %}</h5>
+            </div>
+            {% block breadcrumb %}{% endblock %}
+        </div>
+        <div class="page-header-right ms-auto">
+            {% block page_actions %}{% endblock %}
+        </div>
+    </div>
+    {% endblock %}
+
+    <!-- Main Container -->
+    <div class="main-content">
+        <!-- Django Messages -->
+        {% if messages %}
+        <div class="container-fluid mb-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                <i class="feather-info me-2"></i>{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <div class="nxl-footer">
+        <div class="footer-wrapper">
+            <div class="footer-text">
+                &copy; {% now "Y" %} <strong>SCSI</strong> — Todos os direitos reservados.
+                {% if request.tenant %}
+                <span class="ms-3 text-muted small">{{ request.tenant.trade_name|default:request.tenant.legal_name }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

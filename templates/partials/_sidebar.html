@@ -1,0 +1,137 @@
+{% load static %}
+<nav class="nxl-navigation">
+    <div class="navbar-wrapper">
+        <!-- Logo -->
+        <div class="m-header">
+            <a href="{% url 'dashboard' %}" class="b-brand">
+                <span class="d-flex align-items-center gap-2 px-3 py-2">
+                    <i class="feather-shield text-primary fs-4"></i>
+                    <span class="fw-bold text-white fs-5 logo logo-lg">SCSI</span>
+                    <span class="fw-bold text-white fs-4 logo logo-sm">S</span>
+                </span>
+            </a>
+        </div>
+
+        <!-- Nav content -->
+        <div class="navbar-content">
+            <ul class="nxl-navbar">
+
+                <!-- Section label -->
+                <li class="nxl-item nxl-caption">
+                    <label>Principal</label>
+                </li>
+
+                <!-- Dashboard -->
+                <li class="nxl-item">
+                    <a href="{% url 'dashboard' %}" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-airplay"></i></span>
+                        <span class="nxl-mtext">Dashboard</span>
+                    </a>
+                </li>
+
+                <!-- Section: Operação -->
+                <li class="nxl-item nxl-caption">
+                    <label>Operação</label>
+                </li>
+
+                <!-- Clientes (placeholder) -->
+                <li class="nxl-item">
+                    <a href="#" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-users"></i></span>
+                        <span class="nxl-mtext">Clientes</span>
+                    </a>
+                </li>
+
+                <!-- Propostas (placeholder) -->
+                <li class="nxl-item">
+                    <a href="#" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-file-text"></i></span>
+                        <span class="nxl-mtext">Propostas</span>
+                    </a>
+                </li>
+
+                <!-- Apólices (placeholder) -->
+                <li class="nxl-item">
+                    <a href="#" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-shield"></i></span>
+                        <span class="nxl-mtext">Apólices</span>
+                    </a>
+                </li>
+
+                <!-- Sinistros (placeholder) -->
+                <li class="nxl-item">
+                    <a href="#" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-alert-triangle"></i></span>
+                        <span class="nxl-mtext">Sinistros</span>
+                    </a>
+                </li>
+
+                <!-- CRM (placeholder) -->
+                <li class="nxl-item">
+                    <a href="#" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-trello"></i></span>
+                        <span class="nxl-mtext">CRM</span>
+                    </a>
+                </li>
+
+                <!-- Section: Documentos -->
+                <li class="nxl-item nxl-caption">
+                    <label>Documentos</label>
+                </li>
+
+                <li class="nxl-item">
+                    <a href="{% url 'documents:document_list' %}" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-folder"></i></span>
+                        <span class="nxl-mtext">Arquivos</span>
+                    </a>
+                </li>
+
+                <!-- Section: Administração -->
+                <li class="nxl-item nxl-caption">
+                    <label>Administração</label>
+                </li>
+
+                <!-- Membros -->
+                {% if request.user.role in 'owner,manager' %}
+                <li class="nxl-item">
+                    <a href="{% url 'accounts:member_list' %}" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-user-check"></i></span>
+                        <span class="nxl-mtext">Equipe</span>
+                    </a>
+                </li>
+                {% endif %}
+
+                <!-- Corretora -->
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-briefcase"></i></span>
+                        <span class="nxl-mtext">Corretora</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{% url 'tenants:my_plan' %}">Meu Plano</a>
+                        </li>
+                        {% if request.user.role == 'owner' %}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{% url 'tenants:brokerage_update' %}">Dados da Corretora</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+            </ul>
+
+            <!-- Tenant info card -->
+            {% if request.tenant %}
+            <div class="card text-center mt-3 mx-2" style="background:rgba(255,255,255,0.07); border:none;">
+                <div class="card-body py-2">
+                    <i class="feather-check-circle text-success mb-1"></i>
+                    <p class="text-white-50 fs-11 m-0">{{ request.tenant.trade_name|default:request.tenant.legal_name|truncatechars:22 }}</p>
+                    <span class="badge bg-primary mt-1">{{ request.tenant.plan.name }}</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>

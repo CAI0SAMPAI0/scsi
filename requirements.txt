@@ -1,4 +1,10 @@
-﻿asgiref==3.11.1
 Django==6.0.6
-sqlparse==0.5.5
-tzdata==2026.2
+django-environ
+psycopg[binary]
+gunicorn
+celery
+redis
+django-celery-beat
+django-celery-results
+whitenoise
+Pillow

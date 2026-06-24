@@ -1,12 +1,11 @@
 FROM python:3.13-slim
-
-WORKDIR /code
-
-COPY requirements.txt /code/requirements.txt
-
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
-
+ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential libpq-dev && rm -rf /var/lib/apt/lists/*
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-
-# Comando para rodar o Django usando Gunicorn ou o runserver nativo exposto na porta 8000
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+RUN chmod +x entrypoint.sh
+EXPOSE 8000
+ENTRYPOINT ["./entrypoint.sh"]

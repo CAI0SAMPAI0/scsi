@@ -1,0 +1,92 @@
+:root {
+  --scsi-primary: #3454d1;
+  --scsi-primary-hover: #2a44b5;
+  --scsi-success: #17c666;
+  --scsi-danger: #ea4d4d;
+  --scsi-warning: #f0b429;
+  --scsi-info: #3ec9d6;
+  --scsi-body-bg: #f0f2f8;
+  --scsi-sidebar-bg: #1a233a;
+  --scsi-sidebar-text: #a8b3cf;
+  --scsi-sidebar-active: #ffffff;
+  --scsi-header-bg: #ffffff;
+  --scsi-card-bg: #ffffff;
+  --scsi-font-family: 'Inter', sans-serif;
+  --scsi-border-radius: 8px;
+  --scsi-shadow: 0 2px 12px rgba(52, 84, 209, 0.08);
+  --scsi-transition: all 0.2s ease-in-out;
+}
+
+/* Google Fonts - Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+  font-family: var(--scsi-font-family);
+  background-color: var(--scsi-body-bg);
+}
+
+/* === SCSI Alert Messages === */
+.alert-dismissible .btn-close { padding: .5rem; }
+
+/* === Forms === */
+.form-control:focus, .form-select:focus {
+  border-color: var(--scsi-primary);
+  box-shadow: 0 0 0 0.2rem rgba(52, 84, 209, 0.15);
+}
+
+/* === Buttons === */
+.btn-primary {
+  background-color: var(--scsi-primary);
+  border-color: var(--scsi-primary);
+}
+.btn-primary:hover {
+  background-color: var(--scsi-primary-hover);
+  border-color: var(--scsi-primary-hover);
+}
+
+/* === Auth pages === */
+.auth-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a233a 0%, #3454d1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.auth-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.18);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 420px;
+}
+.auth-logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--scsi-primary);
+  letter-spacing: -0.5px;
+}
+.auth-logo span { color: #1a233a; }
+
+/* === Dashboard cards === */
+.stat-card {
+  border-radius: var(--scsi-border-radius);
+  border: none;
+  box-shadow: var(--scsi-shadow);
+  transition: var(--scsi-transition);
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(52,84,209,0.14); }
+.stat-icon {
+  width: 52px; height: 52px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+}
+
+/* === Badge variants === */
+.badge-role-owner   { background: #3454d1; color: #fff; }
+.badge-role-manager { background: #17c666; color: #fff; }
+.badge-role-broker  { background: #3ec9d6; color: #fff; }
+.badge-role-agent   { background: #f0b429; color: #fff; }
+.badge-role-producer{ background: #ea4d4d; color: #fff; }
+.badge-role-operational { background: #6c757d; color: #fff; }

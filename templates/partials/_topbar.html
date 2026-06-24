@@ -1,0 +1,81 @@
+{% load static %}
+<header class="nxl-header">
+    <div class="header-wrapper">
+        <!-- Left: hamburger + mini toggle -->
+        <div class="header-left d-flex align-items-center gap-4">
+            <a href="javascript:void(0);" class="nxl-head-mobile-toggler" id="mobile-collapse">
+                <div class="hamburger hamburger--arrowturn">
+                    <div class="hamburger-box">
+                        <div class="hamburger-inner"></div>
+                    </div>
+                </div>
+            </a>
+            <div class="nxl-navigation-toggle">
+                <a href="javascript:void(0);" id="menu-mini-button">
+                    <i class="feather-align-left"></i>
+                </a>
+                <a href="javascript:void(0);" id="menu-expend-button" style="display:none">
+                    <i class="feather-arrow-right"></i>
+                </a>
+            </div>
+            <!-- Page title breadcrumb for desktop -->
+            <div class="d-none d-md-flex align-items-center">
+                <span class="text-muted small">{% block header_subtitle %}{% endblock %}</span>
+            </div>
+        </div>
+
+        <!-- Right: notifications + user dropdown -->
+        <div class="header-right ms-auto">
+            <div class="d-flex align-items-center gap-3">
+                <!-- Notifications (placeholder) -->
+                <div class="dropdown nxl-h-item">
+                    <a href="#" class="nxl-head-link me-0" data-bs-toggle="dropdown">
+                        <i class="feather-bell"></i>
+                        <span class="badge bg-danger nxl-h-badge">0</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-notifications-menu">
+                        <div class="d-flex justify-content-between align-items-center notifications-head p-3">
+                            <h6 class="m-0">Notificações</h6>
+                        </div>
+                        <div class="p-3 text-center text-muted small">
+                            <i class="feather-bell-off mb-2 d-block"></i>
+                            Sem novas notificações
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User dropdown -->
+                <div class="dropdown nxl-h-item">
+                    <a href="#" data-bs-toggle="dropdown" class="nxl-head-link me-0">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-text avatar-md bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-semibold" style="width:36px;height:36px;font-size:.85rem;">
+                                {{ request.user.initials }}
+                            </div>
+                        </div>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown">
+                        <!-- User info -->
+                        <div class="px-3 py-3 border-bottom">
+                            <h6 class="mb-0">{{ request.user.get_full_name }}</h6>
+                            <small class="text-muted">{{ request.user.email }}</small><br>
+                            <small class="badge bg-primary mt-1">{{ request.user.role_display }}</small>
+                        </div>
+                        <a href="{% url 'accounts:profile' %}" class="dropdown-item">
+                            <i class="feather-user me-2"></i>Meu Perfil
+                        </a>
+                        <a href="{% url 'tenants:my_plan' %}" class="dropdown-item">
+                            <i class="feather-credit-card me-2"></i>Meu Plano
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <form method="post" action="{% url 'accounts:logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="feather-log-out me-2"></i>Sair
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
