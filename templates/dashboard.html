@@ -1,63 +1,62 @@
 {% extends "base_app.html" %}
 
 {% block title %}Dashboard{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
     <!-- KPI Cards -->
-    <div class="row g-4 mb-4">
+    <div class="row g-3 mb-4">
         <div class="col-xl-2 col-md-4 col-6">
-            <div class="card border-0 shadow-sm">
+            <div class="card stretch stretch-full">
                 <div class="card-body text-center">
-                    <i class="feather-users text-primary fs-3"></i>
-                    <div class="fs-3 fw-bold mt-1">{{ client_count|default:"0" }}</div>
-                    <div class="text-muted small">Clientes</div>
+                    <div class="avatar-text avatar-lg bg-primary-subtle text-primary mx-auto mb-2"><i class="feather-users"></i></div>
+                    <div class="fs-4 fw-bold">{{ client_count|default:"0" }}</div>
+                    <div class="fs-12 text-muted">Clientes</div>
                 </div>
             </div>
         </div>
         <div class="col-xl-2 col-md-4 col-6">
-            <div class="card border-0 shadow-sm">
+            <div class="card stretch stretch-full">
                 <div class="card-body text-center">
-                    <i class="feather-shield text-success fs-3"></i>
-                    <div class="fs-3 fw-bold mt-1">{{ policy_count|default:"0" }}</div>
-                    <div class="text-muted small">Apólices Ativas</div>
+                    <div class="avatar-text avatar-lg bg-success-subtle text-success mx-auto mb-2"><i class="feather-shield"></i></div>
+                    <div class="fs-4 fw-bold">{{ policy_count|default:"0" }}</div>
+                    <div class="fs-12 text-muted">Apólices Ativas</div>
                 </div>
             </div>
         </div>
         <div class="col-xl-2 col-md-4 col-6">
-            <div class="card border-0 shadow-sm">
+            <div class="card stretch stretch-full">
                 <div class="card-body text-center">
-                    <i class="feather-file-text text-warning fs-3"></i>
-                    <div class="fs-3 fw-bold mt-1">{{ proposal_count|default:"0" }}</div>
-                    <div class="text-muted small">Propostas Abertas</div>
+                    <div class="avatar-text avatar-lg bg-warning-subtle text-warning mx-auto mb-2"><i class="feather-file-text"></i></div>
+                    <div class="fs-4 fw-bold">{{ proposal_count|default:"0" }}</div>
+                    <div class="fs-12 text-muted">Propostas Abertas</div>
                 </div>
             </div>
         </div>
         <div class="col-xl-2 col-md-4 col-6">
-            <div class="card border-0 shadow-sm">
+            <div class="card stretch stretch-full">
                 <div class="card-body text-center">
-                    <i class="feather-alert-triangle text-danger fs-3"></i>
-                    <div class="fs-3 fw-bold mt-1">{{ claim_count|default:"0" }}</div>
-                    <div class="text-muted small">Sinistros Abertos</div>
+                    <div class="avatar-text avatar-lg bg-danger-subtle text-danger mx-auto mb-2"><i class="feather-alert-triangle"></i></div>
+                    <div class="fs-4 fw-bold">{{ claim_count|default:"0" }}</div>
+                    <div class="fs-12 text-muted">Sinistros Abertos</div>
                 </div>
             </div>
         </div>
         <div class="col-xl-2 col-md-4 col-6">
-            <div class="card border-0 shadow-sm">
+            <div class="card stretch stretch-full">
                 <div class="card-body text-center">
-                    <i class="feather-refresh-cw text-info fs-3"></i>
-                    <div class="fs-3 fw-bold mt-1">{{ renewal_count|default:"0" }}</div>
-                    <div class="text-muted small">Renov. 30 dias</div>
+                    <div class="avatar-text avatar-lg bg-info-subtle text-info mx-auto mb-2"><i class="feather-refresh-cw"></i></div>
+                    <div class="fs-4 fw-bold">{{ renewal_count|default:"0" }}</div>
+                    <div class="fs-12 text-muted">Renov. 30 dias</div>
                 </div>
             </div>
         </div>
         <div class="col-xl-2 col-md-4 col-6">
-            <div class="card border-0 shadow-sm">
+            <div class="card stretch stretch-full">
                 <div class="card-body text-center">
-                    <i class="feather-dollar-sign text-success fs-3"></i>
-                    <div class="fs-3 fw-bold mt-1">R$ {{ total_commission|floatformat:0|default:"0" }}</div>
-                    <div class="text-muted small">Comissão Total</div>
+                    <div class="avatar-text avatar-lg bg-secondary-subtle text-secondary mx-auto mb-2"><i class="feather-dollar-sign"></i></div>
+                    <div class="fs-4 fw-bold">R$ {{ total_commission|floatformat:0|default:"0" }}</div>
+                    <div class="fs-12 text-muted">Comissão Total</div>
                 </div>
             </div>
         </div>
@@ -66,99 +65,167 @@
     <div class="row g-4">
         <!-- Funnel -->
         <div class="col-lg-6">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white"><h6 class="fw-bold mb-0">Funil de Negociações</h6></div>
+            <div class="card stretch stretch-full">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0"><i class="feather-filter me-1"></i>Funil de Negociações</h6>
+                </div>
                 <div class="card-body">
-                    {% for stage in funnel_data %}
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span class="small fw-semibold">{{ stage.stage__name|default:"Sem etapa" }}</span>
-                            <span class="small text-muted">{{ stage.count }} negociações · R$ {{ stage.total|floatformat:0 }}</span>
-                        </div>
-                        <div class="progress" style="height:24px;">
-                            <div class="progress-bar" role="progressbar" style="width:{% widthratio stage.count 1 100 %}%;background:{{ stage.stage__color|default:'#3454d1' }};min-width:30px;">
+                    {% if funnel_data %}
+                    <div class="funnel-container" style="padding:10px 0;">
+                        {% for stage in funnel_data %}
+                        {% with total_stages=funnel_data|length %}
+                        {% widthratio forloop.counter total_stages 100 as width_pct %}
+                        {% endwith %}
+                        <div class="funnel-row" style="display:flex; justify-content:center; margin-bottom:4px;">
+                            <div style="width:{% widthratio forloop.counter funnel_data|length 100 %}%; min-width:140px; max-width:100%; background:{{ stage.stage__color|default:'#3454d1' }}; color:white; text-align:center; padding:8px 12px; border-radius:4px; font-size:13px; font-weight:600; position:relative;">
+                                <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%);">{{ stage.stage__name|default:"Sem etapa" }}</span>
+                                <span style="position:absolute; right:12px; top:50%; transform:translateY(-50%); font-weight:400; font-size:11px;">{{ stage.count }} deals · R$ {{ stage.total|floatformat:0 }}</span>
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
-                    {% empty %}
+                    {% else %}
                     <div class="text-center text-muted py-4">
                         <i class="feather-trello mb-2 d-block" style="font-size:2rem;"></i>
                         <p>Crie negociações no CRM para ver o funil.</p>
                     </div>
-                    {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        <!-- Policies by LOB -->
+        <!-- Produção Mensal (bar chart) -->
         <div class="col-lg-6">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white"><h6 class="fw-bold mb-0">Apólices por Ramo</h6></div>
+            <div class="card stretch stretch-full">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0"><i class="feather-bar-chart me-1"></i>Produção Mensal</h6>
+                </div>
                 <div class="card-body">
-                    {% for lob in policies_by_lob %}
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="small">{{ lob.line_of_business__name }}</span>
-                        <span class="badge bg-primary">{{ lob.count }}</span>
+                    {% if monthly_data %}
+                    <div class="d-flex align-items-end gap-2" style="height:200px; border-bottom:1px solid #e5e7eb; padding-bottom:8px;">
+                        {% for m in monthly_data %}
+                        <div class="flex-fill text-center" style="height:100%; display:flex; flex-direction:column; justify-content:flex-end; align-items:center;">
+                            <div style="display:flex; gap:2px; align-items:flex-end; height:100%;">
+                                <div style="width:20px; background:#3454d1; border-radius:3px 3px 0 0; height:{% widthratio m.premium max_premium 180 %}px; min-height:2px;" title="Prêmio: R$ {{ m.premium|floatformat:0 }}"></div>
+                                <div style="width:20px; background:#17c666; border-radius:3px 3px 0 0; height:{% widthratio m.commission max_commission 180 %}px; min-height:2px;" title="Comissão: R$ {{ m.commission|floatformat:0 }}"></div>
+                            </div>
+                            <small class="text-muted mt-1" style="font-size:10px;">{{ m.label }}</small>
+                        </div>
+                        {% endfor %}
                     </div>
-                    <div class="progress mb-3" style="height:8px;">
-                        <div class="progress-bar bg-primary" style="width:{% widthratio lob.count 1 100 %}%;"></div>
+                    <div class="d-flex gap-3 justify-content-center mt-2">
+                        <span class="small"><span style="display:inline-block;width:12px;height:12px;background:#3454d1;border-radius:2px;margin-right:4px;"></span>Prêmio (R$)</span>
+                        <span class="small"><span style="display:inline-block;width:12px;height:12px;background:#17c666;border-radius:2px;margin-right:4px;"></span>Comissão (R$)</span>
                     </div>
-                    {% empty %}
-                    <div class="text-center text-muted py-4">
-                        <p>Nenhuma apólice ativa.</p>
+                    {% else %}
+                    <div class="text-center text-muted py-4"><p>Sem dados de produção.</p></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-2">
+        <!-- Apólices por Ramo (donut) -->
+        <div class="col-lg-4">
+            <div class="card stretch stretch-full">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0"><i class="feather-clock me-1"></i>Apólices por Ramo</h6>
+                </div>
+                <div class="card-body text-center">
+                    {% if policies_by_lob %}
+                    {% with colors='#3454d1,#17c666,#f5a623,#ea4d4d,#9b59b6,#00bcd4' %}
+                    <div class="donut-chart mx-auto" style="width:160px; height:160px; border-radius:50%; background:conic-gradient(
+                        {% for lob in policies_by_lob %}{% with c=colors|slice %}
+                        {{ lob.color|default:'#3454d1' }} {% if forloop.first %}0deg{% else %}{% endif %}
+                        {% endwith %}{% endfor %}
+                    ); position:relative;">
+                        <div style="position:absolute; inset:30px; background:white; border-radius:50%;"></div>
                     </div>
-                    {% endfor %}
+                    <div class="mt-3">
+                        {% for lob in policies_by_lob %}
+                        <span class="badge me-1 mb-1" style="background:{{ lob.color|default:'#3454d1' }};">{{ lob.line_of_business__name }}: {{ lob.count }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-muted py-4"><p>Nenhuma apólice ativa.</p></div>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        <!-- Claims by Status -->
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white"><h6 class="fw-bold mb-0">Sinistros por Status</h6></div>
-                <div class="card-body">
-                    {% for cs in claims_by_status %}
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="small">{{ cs.status }}</span>
-                        <span class="badge bg-secondary">{{ cs.count }}</span>
+        <!-- Top Seguradoras (donut) -->
+        <div class="col-lg-4">
+            <div class="card stretch stretch-full">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0"><i class="feather-users me-1"></i>Top Seguradoras</h6>
+                </div>
+                <div class="card-body text-center">
+                    {% if top_insurers %}
+                    <div id="insurer-donut" class="mx-auto" style="width:160px; height:160px; border-radius:50%; position:relative;">
+                        <div style="position:absolute; inset:30px; background:white; border-radius:50%; z-index:1;"></div>
                     </div>
-                    {% empty %}
-                    <div class="text-center text-muted py-4">
-                        <p>Nenhum sinistro registrado.</p>
+                    <div class="mt-3">
+                        {% for ins in top_insurers %}
+                        <span class="badge me-1 mb-1" style="background:{{ ins.color }};">{{ ins.insurer__name }}: {{ ins.count }}</span>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
+                    {% else %}
+                    <div class="text-muted py-4"><p>Sem dados de seguradoras.</p></div>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white"><h6 class="fw-bold mb-0">Ações Rápidas</h6></div>
+        <!-- Sinistros por Status (donut) -->
+        <div class="col-lg-4">
+            <div class="card stretch stretch-full">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0"><i class="feather-alert-triangle me-1"></i>Sinistros por Status</h6>
+                </div>
+                <div class="card-body text-center">
+                    {% if claims_by_status %}
+                    <div id="claims-donut" class="mx-auto" style="width:160px; height:160px; border-radius:50%; position:relative;">
+                        <div style="position:absolute; inset:30px; background:white; border-radius:50%; z-index:1;"></div>
+                    </div>
+                    <div class="mt-3">
+                        {% for cs in claims_by_status %}
+                        <span class="badge me-1 mb-1" style="background:{{ cs.color }};">{{ cs.status }}: {{ cs.count }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-muted py-4"><p>Nenhum sinistro registrado.</p></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card stretch stretch-full">
+                <div class="card-header bg-white"><h6 class="card-title mb-0">Ações Rápidas</h6></div>
                 <div class="card-body">
                     <div class="row g-2">
-                        <div class="col-6">
+                        <div class="col-6 col-md-3">
                             <a href="{% url 'clients:client_create' %}" class="btn btn-outline-primary w-100 py-3">
-                                <i class="feather-user-plus d-block fs-4 mb-1"></i>
-                                <small>Novo Cliente</small>
+                                <i class="feather-user-plus d-block fs-4 mb-1"></i><small>Novo Cliente</small>
                             </a>
                         </div>
-                        <div class="col-6">
+                        <div class="col-6 col-md-3">
                             <a href="{% url 'insurance:proposal_create' %}" class="btn btn-outline-primary w-100 py-3">
-                                <i class="feather-file-plus d-block fs-4 mb-1"></i>
-                                <small>Nova Proposta</small>
+                                <i class="feather-file-plus d-block fs-4 mb-1"></i><small>Nova Proposta</small>
                             </a>
                         </div>
-                        <div class="col-6">
+                        <div class="col-6 col-md-3">
                             <a href="{% url 'crm:kanban' %}" class="btn btn-outline-primary w-100 py-3">
-                                <i class="feather-trello d-block fs-4 mb-1"></i>
-                                <small>CRM Kanban</small>
+                                <i class="feather-trello d-block fs-4 mb-1"></i><small>CRM Kanban</small>
                             </a>
                         </div>
-                        <div class="col-6">
+                        <div class="col-6 col-md-3">
                             <a href="{% url 'ai_agents:chat' %}" class="btn btn-outline-primary w-100 py-3">
-                                <i class="feather-message-circle d-block fs-4 mb-1"></i>
-                                <small>Chat IA</small>
+                                <i class="feather-message-circle d-block fs-4 mb-1"></i><small>Chat IA</small>
                             </a>
                         </div>
                     </div>
@@ -167,16 +234,74 @@
         </div>
     </div>
 
-    <!-- Insights -->
     {% if renewal_count %}
     <div class="row mt-4">
         <div class="col-12">
-            <div class="alert alert-info d-flex align-items-center" role="alert">
-                <i class="feather-info me-2"></i>
+            <div class="alert alert-warning d-flex align-items-center" role="alert">
+                <i class="feather-alert-circle me-2"></i>
                 <strong>{{ renewal_count }}</strong>&nbsp;renovações vencem nos próximos 30 dias.
             </div>
         </div>
     </div>
     {% endif %}
 </div>
+
+<script>
+(function(){
+    // Build donut charts with conic-gradient
+    function buildDonut(elementId, segments) {
+        const el = document.getElementById(elementId);
+        if (!el || !segments.length) return;
+        let total = segments.reduce((s, seg) => s + seg.value, 0);
+        if (total === 0) return;
+        let deg = 0;
+        let gradient = [];
+        segments.forEach(seg => {
+            const pct = seg.value / total;
+            const start = deg;
+            deg += pct * 360;
+            gradient.push(seg.color + ' ' + start + 'deg ' + deg + 'deg');
+        });
+        el.style.background = 'conic-gradient(' + gradient.join(', ') + ')';
+    }
+
+    {% if policies_by_lob %}
+    buildDonut('insurer-donut-placeholder', []);
+    {% endif %}
+
+    {% if top_insurers %}
+    buildDonut('insurer-donut', [
+        {% for ins in top_insurers %}{color:'{{ ins.color }}', value:{{ ins.count }}}{% if not forloop.last %},{% endif %}{% endfor %}
+    ]);
+    {% endif %}
+
+    {% if claims_by_status %}
+    buildDonut('claims-donut', [
+        {% for cs in claims_by_status %}{color:'{{ cs.color }}', value:{{ cs.count }}}{% if not forloop.last %},{% endif %}{% endfor %}
+    ]);
+    {% endif %}
+
+    // Also build policies donut
+    {% if policies_by_lob %}
+    (function(){
+        var el = document.querySelector('.donut-chart');
+        if (!el) return;
+        var segments = [
+            {% for lob in policies_by_lob %}{color:'{{ lob.color|default:"#3454d1" }}', value:{{ lob.count }}}{% if not forloop.last %},{% endif %}{% endfor %}
+        ];
+        var total = segments.reduce(function(s, seg){ return s + seg.value; }, 0);
+        if (total === 0) return;
+        var deg = 0;
+        var gradient = [];
+        segments.forEach(function(seg){
+            var pct = seg.value / total;
+            var start = deg;
+            deg += pct * 360;
+            gradient.push(seg.color + ' ' + start + 'deg ' + deg + 'deg');
+        });
+        el.style.background = 'conic-gradient(' + gradient.join(', ') + ')';
+    })();
+    {% endif %}
+})();
+</script>
 {% endblock %}

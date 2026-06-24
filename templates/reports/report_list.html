@@ -1,121 +1,150 @@
 {% extends "base_app.html" %}
 
 {% block title %}Relatórios{% endblock %}
-{% block page_title %}Relatórios{% endblock %}
 
 {% block content %}
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-    <!-- Clientes -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
-                <i class="feather-users"></i>
+<div class="row g-4">
+    <div class="col-xl-4 col-md-6">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="avatar-text avatar-lg bg-primary-subtle text-primary">
+                        <i class="feather-users"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title mb-0">Carteira de Clientes</h6>
+                        <small class="text-muted">Dados cadastrais e status</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'reports:csv_export' report_type='clients' %}" class="btn btn-sm btn-success">
+                        <i class="feather-download me-1"></i>CSV
+                    </a>
+                    <a href="{% url 'reports:pdf_export' report_type='clients' %}" class="btn btn-sm btn-danger">
+                        <i class="feather-download me-1"></i>PDF
+                    </a>
+                </div>
             </div>
-            <h3 class="font-semibold text-gray-800">Carteira de Clientes</h3>
-        </div>
-        <p class="text-sm text-gray-500 mb-4">Lista de clientes com dados cadastrais e status.</p>
-        <div class="flex gap-2">
-            <a href="{% url 'reports:csv_export' report_type='clients' %}" class="px-3 py-1.5 bg-green-50 text-green-700 text-sm rounded-lg hover:bg-green-100 transition-colors">
-                <i class="feather-download me-1"></i>CSV
-            </a>
-            <a href="{% url 'reports:pdf_export' report_type='clients' %}" class="px-3 py-1.5 bg-red-50 text-red-700 text-sm rounded-lg hover:bg-red-100 transition-colors">
-                <i class="feather-download me-1"></i>PDF
-            </a>
         </div>
     </div>
 
-    <!-- Propostas -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center">
-                <i class="feather-file-text"></i>
+    <div class="col-xl-4 col-md-6">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="avatar-text avatar-lg bg-warning-subtle text-warning">
+                        <i class="feather-file-text"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title mb-0">Propostas</h6>
+                        <small class="text-muted">Por status, período e seguradora</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'reports:csv_export' report_type='proposals' %}" class="btn btn-sm btn-success">
+                        <i class="feather-download me-1"></i>CSV
+                    </a>
+                    <a href="{% url 'reports:pdf_export' report_type='proposals' %}" class="btn btn-sm btn-danger">
+                        <i class="feather-download me-1"></i>PDF
+                    </a>
+                </div>
             </div>
-            <h3 class="font-semibold text-gray-800">Propostas</h3>
-        </div>
-        <p class="text-sm text-gray-500 mb-4">Propostas por status, período e seguradora.</p>
-        <div class="flex gap-2">
-            <a href="{% url 'reports:csv_export' report_type='proposals' %}" class="px-3 py-1.5 bg-green-50 text-green-700 text-sm rounded-lg hover:bg-green-100 transition-colors">
-                <i class="feather-download me-1"></i>CSV
-            </a>
-            <a href="{% url 'reports:pdf_export' report_type='proposals' %}" class="px-3 py-1.5 bg-red-50 text-red-700 text-sm rounded-lg hover:bg-red-100 transition-colors">
-                <i class="feather-download me-1"></i>PDF
-            </a>
         </div>
     </div>
 
-    <!-- Apólices -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
-                <i class="feather-shield"></i>
+    <div class="col-xl-4 col-md-6">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="avatar-text avatar-lg bg-success-subtle text-success">
+                        <i class="feather-shield"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title mb-0">Apólices</h6>
+                        <small class="text-muted">Vigentes, prêmios e seguradoras</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'reports:csv_export' report_type='policies' %}" class="btn btn-sm btn-success">
+                        <i class="feather-download me-1"></i>CSV
+                    </a>
+                    <a href="{% url 'reports:pdf_export' report_type='policies' %}" class="btn btn-sm btn-danger">
+                        <i class="feather-download me-1"></i>PDF
+                    </a>
+                </div>
             </div>
-            <h3 class="font-semibold text-gray-800">Apólices</h3>
-        </div>
-        <p class="text-sm text-gray-500 mb-4">Apólices vigentes, prêmios e seguradoras.</p>
-        <div class="flex gap-2">
-            <a href="{% url 'reports:csv_export' report_type='policies' %}" class="px-3 py-1.5 bg-green-50 text-green-700 text-sm rounded-lg hover:bg-green-100 transition-colors">
-                <i class="feather-download me-1"></i>CSV
-            </a>
-            <a href="{% url 'reports:pdf_export' report_type='policies' %}" class="px-3 py-1.5 bg-red-50 text-red-700 text-sm rounded-lg hover:bg-red-100 transition-colors">
-                <i class="feather-download me-1"></i>PDF
-            </a>
         </div>
     </div>
 
-    <!-- Sinistros -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center">
-                <i class="feather-alert-triangle"></i>
+    <div class="col-xl-4 col-md-6">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="avatar-text avatar-lg bg-danger-subtle text-danger">
+                        <i class="feather-alert-triangle"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title mb-0">Sinistros</h6>
+                        <small class="text-muted">Por status e valores</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'reports:csv_export' report_type='claims' %}" class="btn btn-sm btn-success">
+                        <i class="feather-download me-1"></i>CSV
+                    </a>
+                    <a href="{% url 'reports:pdf_export' report_type='claims' %}" class="btn btn-sm btn-danger">
+                        <i class="feather-download me-1"></i>PDF
+                    </a>
+                </div>
             </div>
-            <h3 class="font-semibold text-gray-800">Sinistros</h3>
-        </div>
-        <p class="text-sm text-gray-500 mb-4">Sinistros por status e valores.</p>
-        <div class="flex gap-2">
-            <a href="{% url 'reports:csv_export' report_type='claims' %}" class="px-3 py-1.5 bg-green-50 text-green-700 text-sm rounded-lg hover:bg-green-100 transition-colors">
-                <i class="feather-download me-1"></i>CSV
-            </a>
-            <a href="{% url 'reports:pdf_export' report_type='claims' %}" class="px-3 py-1.5 bg-red-50 text-red-700 text-sm rounded-lg hover:bg-red-100 transition-colors">
-                <i class="feather-download me-1"></i>PDF
-            </a>
         </div>
     </div>
 
-    <!-- Renovações -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center">
-                <i class="feather-refresh-cw"></i>
+    <div class="col-xl-4 col-md-6">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="avatar-text avatar-lg bg-info-subtle text-info">
+                        <i class="feather-refresh-cw"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title mb-0">Renovações</h6>
+                        <small class="text-muted">A vencer, renovadas e perdidas</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'reports:csv_export' report_type='renewals' %}" class="btn btn-sm btn-success">
+                        <i class="feather-download me-1"></i>CSV
+                    </a>
+                    <a href="{% url 'reports:pdf_export' report_type='renewals' %}" class="btn btn-sm btn-danger">
+                        <i class="feather-download me-1"></i>PDF
+                    </a>
+                </div>
             </div>
-            <h3 class="font-semibold text-gray-800">Renovações</h3>
-        </div>
-        <p class="text-sm text-gray-500 mb-4">Renovações a vencer, renovadas e perdidas.</p>
-        <div class="flex gap-2">
-            <a href="{% url 'reports:csv_export' report_type='renewals' %}" class="px-3 py-1.5 bg-green-50 text-green-700 text-sm rounded-lg hover:bg-green-100 transition-colors">
-                <i class="feather-download me-1"></i>CSV
-            </a>
-            <a href="{% url 'reports:pdf_export' report_type='renewals' %}" class="px-3 py-1.5 bg-red-50 text-red-700 text-sm rounded-lg hover:bg-red-100 transition-colors">
-                <i class="feather-download me-1"></i>PDF
-            </a>
         </div>
     </div>
 
-    <!-- Comissões -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center">
-                <i class="feather-dollar-sign"></i>
+    <div class="col-xl-4 col-md-6">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="avatar-text avatar-lg bg-secondary-subtle text-secondary">
+                        <i class="feather-dollar-sign"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title mb-0">Comissões</h6>
+                        <small class="text-muted">Recebidas e repasses</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'reports:csv_export' report_type='commissions' %}" class="btn btn-sm btn-success">
+                        <i class="feather-download me-1"></i>CSV
+                    </a>
+                    <a href="{% url 'reports:pdf_export' report_type='commissions' %}" class="btn btn-sm btn-danger">
+                        <i class="feather-download me-1"></i>PDF
+                    </a>
+                </div>
             </div>
-            <h3 class="font-semibold text-gray-800">Comissões</h3>
-        </div>
-        <p class="text-sm text-gray-500 mb-4">Comissões recebidas e repasses.</p>
-        <div class="flex gap-2">
-            <a href="{% url 'reports:csv_export' report_type='commissions' %}" class="px-3 py-1.5 bg-green-50 text-green-700 text-sm rounded-lg hover:bg-green-100 transition-colors">
-                <i class="feather-download me-1"></i>CSV
-            </a>
-            <a href="{% url 'reports:pdf_export' report_type='commissions' %}" class="px-3 py-1.5 bg-red-50 text-red-700 text-sm rounded-lg hover:bg-red-100 transition-colors">
-                <i class="feather-download me-1"></i>PDF
-            </a>
         </div>
     </div>
 </div>

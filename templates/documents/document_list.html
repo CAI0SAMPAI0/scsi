@@ -1,0 +1,42 @@
+{% extends "base_app.html" %}
+
+{% block title %}Arquivos{% endblock %}
+
+{% block content %}
+<div class="card stretch stretch-full">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Arquivo</th>
+                        <th>Tipo</th>
+                        <th>Tamanho</th>
+                        <th>Enviado por</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'documents:document_download' pk=doc.pk %}" class="text-decoration-none fw-semibold">
+                                <i class="feather-file me-1"></i>{{ doc.original_filename }}
+                            </a>
+                        </td>
+                        <td><span class="badge bg-light text-dark">{{ doc.mime_type }}</span></td>
+                        <td>{{ doc.size|filesizeformat }}</td>
+                        <td>{{ doc.uploaded_by.get_full_name|default:doc.uploaded_by.email }}</td>
+                        <td>{{ doc.created_at|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">Nenhum arquivo encontrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

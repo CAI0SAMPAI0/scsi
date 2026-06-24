@@ -84,13 +84,15 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        from django.db.models import Count, Sum, Q
+        from django.db.models import Count, Sum
+        from django.db.models.functions import TruncMonth
         from datetime import date, timedelta
         from clients.models import Client
         from insurance.models import Policy, Proposal, Renewal
         from claims.models import Claim
         from commissions.models import Commission
-        from crm.models import Deal, Stage
+        from crm.models import Deal
+        import calendar
 
         tenant = self.request.tenant
         today = date.today()
@@ -107,21 +109,10 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         )
         ctx['renewal_count'] = renewals_30.count()
 
-        total_premium = Policy.objects.filter(
-            brokerage=tenant, status='active',
-            start_date__gte=thirty_days,
-        ).aggregate(total=Sum('total_premium'))['total'] or 0
-        ctx['total_premium'] = total_premium
-
         total_commission = Commission.objects.filter(
             brokerage=tenant, status__in=['received', 'paid'],
         ).aggregate(total=Sum('insurer_amount'))['total'] or 0
         ctx['total_commission'] = total_commission
-
-        pending_commission = Commission.objects.filter(
-            brokerage=tenant, status='pending',
-        ).aggregate(total=Sum('insurer_amount'))['total'] or 0
-        ctx['pending_commission'] = pending_commission
 
         # CRM Funnel
         pipeline = Deal.objects.filter(brokerage=tenant).values('stage__name', 'stage__color').annotate(
@@ -129,19 +120,61 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         ).order_by('stage__order')
         ctx['funnel_data'] = list(pipeline)
 
-        # Policies by line of business
-        policies_by_lob = Policy.objects.filter(
+        # Policies by line of business with colors
+        lob_colors = ['#3454d1', '#17c666', '#f5a623', '#ea4d4d', '#9b59b6', '#00bcd4']
+        policies_by_lob = list(Policy.objects.filter(
             brokerage=tenant, status='active',
         ).values('line_of_business__name').annotate(
             count=Count('id')
-        ).order_by('-count')[:5]
-        ctx['policies_by_lob'] = list(policies_by_lob)
+        ).order_by('-count')[:6])
+        for i, lob in enumerate(policies_by_lob):
+            lob['color'] = lob_colors[i % len(lob_colors)]
+        ctx['policies_by_lob'] = policies_by_lob
 
-        # Claims by status
-        claims_by_status = Claim.objects.filter(
+        # Top insurers with colors
+        insurer_colors = ['#3454d1', '#17c666', '#f5a623', '#ea4d4d', '#9b59b6']
+        top_insurers = list(Policy.objects.filter(
+            brokerage=tenant, status='active',
+        ).values('insurer__name').annotate(
+            count=Count('id')
+        ).order_by('-count')[:5])
+        for i, ins in enumerate(top_insurers):
+            ins['color'] = insurer_colors[i % len(insurer_colors)]
+        ctx['top_insurers'] = top_insurers
+
+        # Claims by status with colors
+        status_colors = {
+            'opened': '#ea4d4d', 'under_analysis': '#f5a623',
+            'approved': '#17c666', 'denied': '#6c757d',
+            'paid': '#3454d1', 'closed': '#adb5bd',
+        }
+        claims_by_status = list(Claim.objects.filter(
             brokerage=tenant,
-        ).values('status').annotate(count=Count('id'))
-        ctx['claims_by_status'] = list(claims_by_status)
+        ).values('status').annotate(count=Count('id')))
+        for cs in claims_by_status:
+            cs['color'] = status_colors.get(cs['status'], '#6c757d')
+        ctx['claims_by_status'] = claims_by_status
+
+        # Monthly production (last 6 months)
+        monthly = list(Policy.objects.filter(
+            brokerage=tenant, start_date__isnull=False,
+        ).annotate(
+            month=TruncMonth('start_date'),
+        ).values('month').annotate(
+            premium=Sum('total_premium'),
+            commission=Sum('total_premium'),
+        ).order_by('month')[-6:])
+
+        for m in monthly:
+            m['label'] = m['month'].strftime('%b/%Y')
+            m['premium'] = float(m['premium'] or 0)
+            m['commission'] = float(m['commission'] or 0) * 0.15
+
+        premiums = [m['premium'] for m in monthly]
+        commissions = [m['commission'] for m in monthly]
+        ctx['monthly_data'] = monthly
+        ctx['max_premium'] = max(premiums) if premiums else 1
+        ctx['max_commission'] = max(commissions) if commissions else 1
 
         return ctx
 
