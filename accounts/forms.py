@@ -19,6 +19,7 @@ class EmailLoginForm(AuthenticationForm):
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
             'placeholder': '••••••••',
+            'autocomplete': 'current-password',
         }),
     )
 
@@ -45,11 +46,11 @@ class RegisterForm(UserCreationForm):
     )
     password1 = forms.CharField(
         label='Senha',
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': '••••••••'}),
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': '••••••••', 'autocomplete': 'new-password'}),
     )
     password2 = forms.CharField(
         label='Confirmar senha',
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': '••••••••'}),
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': '••••••••', 'autocomplete': 'new-password'}),
     )
 
     class Meta:
