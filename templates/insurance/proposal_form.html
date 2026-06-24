@@ -1,0 +1,162 @@
+{% extends "base_app.html" %}
+
+{% block title %}{% if form.instance.pk %}Editar Proposta{% else %}Nova Proposta{% endif %}{% endblock %}
+{% block page_title %}{% if form.instance.pk %}Editar Proposta{% else %}Nova Proposta{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h6 class="fw-semibold mb-3">Dados da Proposta</h6>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Número *</label>
+                                {{ form.number }}
+                                {% if form.number.errors %}<div class="invalid-feedback d-block">{{ form.number.errors|join:" " }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Status</label>
+                                {{ form.status }}
+                            </div>
+                        </div>
+
+                        <h6 class="fw-semibold mb-3 mt-4">Vínculos</h6>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Cliente *</label>
+                            {{ form.client }}
+                            {% if form.client.errors %}<div class="invalid-feedback d-block">{{ form.client.errors|join:" " }}</div>{% endif %}
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Seguradora *</label>
+                                {{ form.insurer }}
+                                {% if form.insurer.errors %}<div class="invalid-feedback d-block">{{ form.insurer.errors|join:" " }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Ramo *</label>
+                                {{ form.line_of_business }}
+                                {% if form.line_of_business.errors %}<div class="invalid-feedback d-block">{{ form.line_of_business.errors|join:" " }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Produtor</label>
+                                {{ form.producer }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Agente</label>
+                                {{ form.agent }}
+                            </div>
+                        </div>
+
+                        <h6 class="fw-semibold mb-3 mt-4">Valores</h6>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-medium">Prêmio Líquido</label>
+                                {{ form.net_premium }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-medium">IOF</label>
+                                {{ form.iof }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-medium">Prêmio Total</label>
+                                {{ form.total_premium }}
+                            </div>
+                        </div>
+
+                        <h6 class="fw-semibold mb-3 mt-4">Vigência e Pagamento</h6>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-medium">Início Proposto</label>
+                                {{ form.proposed_start_date }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-medium">Fim Proposto</label>
+                                {{ form.proposed_end_date }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-medium">Condições de Pagamento</label>
+                                {{ form.payment_terms }}
+                            </div>
+                        </div>
+
+                        <h6 class="fw-semibold mb-3 mt-4">Observações</h6>
+                        <div class="mb-3">
+                            {{ form.notes }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Covered Items formset -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h6 class="fw-semibold mb-3">Itens Segurados</h6>
+                        {{ item_formset.management_form }}
+                        <div id="item-formset-wrapper">
+                            {% for item_form in item_formset %}
+                            <div class="item-form border rounded p-3 mb-3 position-relative">
+                                {% if item_form.instance.pk %}{{ item_form.DELETE }}{% endif %}
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-medium">Tipo</label>
+                                        {{ item_form.item_type }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-medium">Descrição</label>
+                                        {{ item_form.description }}
+                                        {% if item_form.description.errors %}<div class="invalid-feedback d-block">{{ item_form.description.errors|join:" " }}</div>{% endif %}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-medium">Identificador</label>
+                                        {{ item_form.identifier }}
+                                    </div>
+                                </div>
+                                <div class="row g-3 mt-1">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-medium">Valor Segurado</label>
+                                        {{ item_form.insured_amount }}
+                                    </div>
+                                </div>
+                                {{ item_form.attributes }}
+                                {{ item_form.coverages }}
+                                {% if item_form.instance.pk %}
+                                <div class="form-check mt-2">
+                                    {{ item_form.DELETE }}
+                                    <label class="form-check-label text-danger small" for="{{ item_form.DELETE.id_for_label }}">Remover este item</label>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary fw-semibold">
+                        <i class="feather-save me-2"></i>Salvar
+                    </button>
+                    <a href="{% url 'insurance:proposal_list' %}" class="btn btn-light fw-medium">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base_app.html" %}
+
+{% block title %}Endossos - Apólice {{ policy.policy_number }}{% endblock %}
+{% block page_title %}Endossos - Apólice {{ policy.policy_number }}{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'claims:endorsement_create' policy.pk %}" class="btn btn-primary btn-sm">
+    <i class="feather-plus me-1"></i>Novo Endosso
+</a>
+<a href="{% url 'insurance:policy_detail' policy.pk %}" class="btn btn-sm btn-light">
+    <i class="feather-arrow-left me-1"></i>Voltar para Apólice
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Número</th>
+                            <th>Tipo</th>
+                            <th>Status</th>
+                            <th>Vigência</th>
+                            <th class="text-end">Variação Prêmio</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for endorsement in endorsements %}
+                        <tr>
+                            <td class="fw-medium">{{ endorsement.endorsement_number }}</td>
+                            <td><span class="badge bg-light text-dark">{{ endorsement.get_type_display }}</span></td>
+                            <td>
+                                <span class="badge bg-{% if endorsement.status == 'pending' %}warning{% elif endorsement.status == 'applied' %}success{% elif endorsement.status == 'canceled' %}secondary{% endif %}">
+                                    {{ endorsement.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ endorsement.effective_date|date:"d/m/Y"|default:"-" }}</td>
+                            <td class="text-end">R$ {{ endorsement.premium_change|floatformat:2 }}</td>
+                            <td class="text-end">
+                                <span class="btn btn-sm btn-light" title="Detalhes">
+                                    <i class="feather-eye"></i>
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                Nenhum endosso encontrado.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if is_paginated %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a></li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Próximo</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

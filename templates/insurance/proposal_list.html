@@ -1,0 +1,115 @@
+{% extends "base_app.html" %}
+
+{% block title %}Propostas{% endblock %}
+{% block page_title %}Propostas{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'insurance:proposal_create' %}" class="btn btn-primary btn-sm">
+    <i class="feather-plus me-1"></i>Nova Proposta
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Search -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Buscar</label>
+                    {{ search_form.q }}
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-medium">Status</label>
+                    {{ search_form.status }}
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-medium">Seguradora</label>
+                    {{ search_form.insurer }}
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-medium">Ramo</label>
+                    {{ search_form.line_of_business }}
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="feather-search me-1"></i>Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- List -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Número</th>
+                            <th>Cliente</th>
+                            <th>Seguradora</th>
+                            <th>Ramo</th>
+                            <th>Status</th>
+                            <th>Prêmio</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for proposal in proposals %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'insurance:proposal_detail' proposal.pk %}" class="fw-medium text-decoration-none">
+                                    {{ proposal.number }}
+                                </a>
+                            </td>
+                            <td>{{ proposal.client }}</td>
+                            <td>{{ proposal.insurer }}</td>
+                            <td>{{ proposal.line_of_business }}</td>
+                            <td>
+                                <span class="badge bg-{% if proposal.status == 'draft' %}secondary{% elif proposal.status == 'sent' %}info{% elif proposal.status == 'under_analysis' %}warning{% elif proposal.status == 'approved' %}success{% elif proposal.status == 'rejected' %}danger{% elif proposal.status == 'converted' %}primary{% endif %}">
+                                    {{ proposal.get_status_display }}
+                                </span>
+                            </td>
+                            <td>R$ {{ proposal.total_premium|floatformat:2 }}</td>
+                            <td class="text-end">
+                                <a href="{% url 'insurance:proposal_detail' proposal.pk %}" class="btn btn-sm btn-light" title="Ver detalhes">
+                                    <i class="feather-eye"></i>
+                                </a>
+                                <a href="{% url 'insurance:proposal_update' proposal.pk %}" class="btn btn-sm btn-light" title="Editar">
+                                    <i class="feather-edit-2"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                Nenhuma proposta encontrada.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.insurer %}&insurer={{ request.GET.insurer }}{% endif %}{% if request.GET.line_of_business %}&line_of_business={{ request.GET.line_of_business }}{% endif %}">Anterior</a></li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.insurer %}&insurer={{ request.GET.insurer }}{% endif %}{% if request.GET.line_of_business %}&line_of_business={{ request.GET.line_of_business }}{% endif %}">{{ num }}</a></li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.insurer %}&insurer={{ request.GET.insurer }}{% endif %}{% if request.GET.line_of_business %}&line_of_business={{ request.GET.line_of_business }}{% endif %}">Próximo</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

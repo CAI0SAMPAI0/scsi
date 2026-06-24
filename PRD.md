@@ -2951,11 +2951,11 @@ flowchart LR
 
 ### Sprint 9 — Clientes
 **Objetivo:** cadastro de clientes.
-- [ ] App `clients` com model `Client` (PF/PJ, `ai_summary`)
-- [ ] CRUD com `TenantQuerysetMixin` + busca/paginação
-- [ ] `UniqueConstraint(['brokerage','document'])`
-- [ ] Tela de detalhe com abas (apólices, propostas, sinistros, anexos)
-- [ ] Integrar anexos protegidos
+- [x] App `clients` com model `Client` (PF/PJ, `ai_summary`)
+- [x] CRUD com `TenantQuerysetMixin` + busca/paginação
+- [x] `UniqueConstraint(['brokerage','document'])`
+- [x] Tela de detalhe com abas (apólices, propostas, sinistros, anexos)
+- [x] Integrar anexos protegidos
 
 **Entrega:** clientes cadastrados, isolados por tenant, com anexos.
 
@@ -2969,10 +2969,10 @@ flowchart LR
 
 ### Sprint 10 — Seguradoras e Ramos
 **Objetivo:** catálogos tenant-aware.
-- [ ] App `insurers`: models `Insurer` e `LineOfBusiness`
-- [ ] CRUDs isolados por tenant
-- [ ] Seeds padrão de ramos no onboarding (revisar Sprint 6)
-- [ ] Selects de FK filtrando ativos do tenant
+- [x] App `insurers`: models `Insurer` e `LineOfBusiness`
+- [x] CRUDs isolados por tenant
+- [x] Seeds padrão de ramos no onboarding (revisar Sprint 6)
+- [x] Selects de FK filtrando ativos do tenant
 
 **Entrega:** seguradoras e ramos disponíveis para propostas/apólices.
 
@@ -2988,11 +2988,11 @@ flowchart LR
 
 ### Sprint 11 — Propostas
 **Objetivo:** cadastro de propostas com itens básicos.
-- [ ] App `insurance`: model `Proposal` (+ `CoveredItem` base)
-- [ ] CRUD com selects filtrados por tenant
-- [ ] Gestão de itens cobertos inline na proposta
-- [ ] Anexos protegidos na proposta
-- [ ] Filtros (status, seguradora, ramo, produtor, período)
+- [x] App `insurance`: model `Proposal` (+ `CoveredItem` base)
+- [x] CRUD com selects filtrados por tenant
+- [x] Gestão de itens cobertos inline na proposta
+- [x] Anexos protegidos na proposta
+- [x] Filtros (status, seguradora, ramo, produtor, período)
 
 **Entrega:** propostas com itens e anexos, isoladas por tenant.
 
@@ -3008,12 +3008,12 @@ flowchart LR
 
 ### Sprint 12 — Apólices + Geração a partir de Proposta
 **Objetivo:** apólices e o serviço de geração.
-- [ ] Model `Policy` (+ relação com `Proposal`)
-- [ ] CRUD de apólices com filtros
-- [ ] `insurance/services.py::generate_policy_from_proposal` (transação)
-- [ ] Botão "Gerar apólice" na proposta (copia dados, clona itens, `policy_number` obrigatório)
-- [ ] Marcar proposta como `converted`; bloquear 2ª geração
-- [ ] Gerar `Commission` na criação da apólice (placeholder até Sprint 17)
+- [x] Model `Policy` (+ relação com `Proposal`)
+- [x] CRUD de apólices com filtros
+- [x] `insurance/services.py::generate_policy_from_proposal` (transação)
+- [x] Botão "Gerar apólice" na proposta (copia dados, clona itens, `policy_number` obrigatório)
+- [x] Marcar proposta como `converted`; bloquear 2ª geração
+- [x] Gerar `Commission` na criação da apólice (placeholder até Sprint 17)
 
 **Entrega:** apólice criada a partir da proposta com um clique.
 
@@ -3029,38 +3029,38 @@ flowchart LR
 
 ### Sprint 13 — Itens Cobertos (refino)
 **Objetivo:** itens dinâmicos por tipo.
-- [ ] `CheckConstraint` (exatamente um entre proposal/policy)
-- [ ] Forms dinâmicos por `item_type` (auto/property/fleet/travel/life/equipment/other)
-- [ ] `attributes` e `coverages` (JSONB) por tipo
-- [ ] Validação de importância segurada e coberturas
+- [x] `CheckConstraint` (exatamente um entre proposal/policy)
+- [x] Forms dinâmicos por `item_type` (auto/property/fleet/travel/life/equipment/other)
+- [x] `attributes` e `coverages` (JSONB) por tipo
+- [x] Validação de importância segurada e coberturas
 
 **Entrega:** itens cobertos completos e específicos por tipo.
 
 ### Sprint 14 — Sinistros
 **Objetivo:** gestão de sinistros.
-- [ ] App `claims`: model `Claim` (policy + covered_item obrigatórios)
-- [ ] CRUD com seleção de item coberto da apólice (do tenant)
-- [ ] Validações de datas (ocorrência ≤ aviso)
-- [ ] Anexos protegidos (BOs/laudos/fotos)
-- [ ] Filtros por status/apólice/período
+- [x] App `claims`: model `Claim` (policy + covered_item obrigatórios)
+- [x] CRUD com seleção de item coberto da apólice (do tenant)
+- [x] Validações de datas (ocorrência ≤ aviso)
+- [x] Anexos protegidos (BOs/laudos/fotos)
+- [x] Filtros por status/apólice/período
 
 **Entrega:** sinistros vinculados a item coberto de apólice.
 
 ### Sprint 15 — Endossos
 **Objetivo:** alterações em apólices.
-- [ ] Model `Endorsement` (tipos: increase/decrease/cancellation/data_change)
-- [ ] CRUD vinculado à apólice; `endorsement_number` único por apólice
-- [ ] Endosso de cancelamento atualiza status da apólice
-- [ ] Histórico de endossos no detalhe da apólice
+- [x] Model `Endorsement` (tipos: increase/decrease/cancellation/data_change)
+- [x] CRUD vinculado à apólice; `endorsement_number` único por apólice
+- [x] Endosso de cancelamento atualiza status da apólice
+- [x] Histórico de endossos no detalhe da apólice
 
 **Entrega:** endossos registrados e refletindo na apólice.
 
 ### Sprint 16 — Agentes e Produtores
 **Objetivo:** hierarquia comercial.
-- [ ] App `partners`: models `Agent` e `Producer`
-- [ ] CRUDs isolados por tenant (pessoa/empresa, `user` opcional)
-- [ ] Vínculo produtor → agente ou direto à corretora
-- [ ] Taxas de comissão padrão
+- [x] App `partners`: models `Agent` e `Producer`
+- [x] CRUDs isolados por tenant (pessoa/empresa, `user` opcional)
+- [x] Vínculo produtor → agente ou direto à corretora
+- [x] Taxas de comissão padrão
 
 **Entrega:** hierarquia de agentes/produtores cadastrável.
 

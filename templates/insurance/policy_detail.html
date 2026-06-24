@@ -1,0 +1,243 @@
+{% extends "base_app.html" %}
+
+{% block title %}Apólice {{ policy.policy_number }}{% endblock %}
+{% block page_title %}Apólice {{ policy.policy_number }}{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'insurance_policies:policy_list' %}" class="btn btn-sm btn-light">
+    <i class="feather-arrow-left me-1"></i>Voltar
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link {% if active_tab == 'info' %}active{% endif %}" href="?tab=info">Informações</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if active_tab == 'items' %}active{% endif %}" href="?tab=items">Itens Segurados</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if active_tab == 'attachments' %}active{% endif %}" href="?tab=attachments">Anexos</a>
+        </li>
+    </ul>
+
+    {% if active_tab == 'info' %}
+    <div class="row g-4">
+        <!-- Main Info -->
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle fw-bold me-3" style="width:56px;height:56px;font-size:1.25rem;">
+                            {{ policy.policy_number|truncatechars:2 }}
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">{{ policy.policy_number }}</h5>
+                            <span class="text-muted">{{ policy.client }}</span>
+                            <div class="mt-1">
+                                <span class="badge bg-{% if policy.status == 'active' %}success{% elif policy.status == 'canceled' %}danger{% elif policy.status == 'expired' %}secondary{% elif policy.status == 'renewed' %}info{% endif %}">
+                                    {{ policy.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="text-muted small">Seguradora</div>
+                            <div class="fw-medium">{{ policy.insurer }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Ramo</div>
+                            <div class="fw-medium">{{ policy.line_of_business }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Produtor</div>
+                            <div class="fw-medium">{{ policy.producer|default:"-" }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Agente</div>
+                            <div class="fw-medium">{{ policy.agent|default:"-" }}</div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <h6 class="fw-semibold mb-3">Valores</h6>
+                    <div class="row g-3">
+                        <div class="col-3">
+                            <div class="text-muted small">Prêmio Líquido</div>
+                            <div class="fw-medium">R$ {{ policy.net_premium|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-3">
+                            <div class="text-muted small">IOF</div>
+                            <div class="fw-medium">R$ {{ policy.iof|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-3">
+                            <div class="text-muted small">Prêmio Total</div>
+                            <div class="fw-medium">R$ {{ policy.total_premium|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-3">
+                            <div class="text-muted small">Comissão</div>
+                            <div class="fw-medium">{{ policy.commission_rate }}%</div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <h6 class="fw-semibold mb-3">Vigência e Pagamento</h6>
+                    <div class="row g-3">
+                        <div class="col-4">
+                            <div class="text-muted small">Início Vigência</div>
+                            <div class="fw-medium">{{ policy.start_date|date:"d/m/Y"|default:"-" }}</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-muted small">Fim Vigência</div>
+                            <div class="fw-medium">{{ policy.end_date|date:"d/m/Y"|default:"-" }}</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-muted small">Dados de Pagamento</div>
+                            <div class="fw-medium">{{ policy.payment_info|default:"-" }}</div>
+                        </div>
+                    </div>
+
+                    {% if policy.proposal %}
+                    <hr class="my-4">
+                    <h6 class="fw-semibold mb-3">Proposta de Origem</h6>
+                    <a href="{% url 'insurance:proposal_detail' policy.proposal.pk %}" class="text-decoration-none">
+                        <i class="feather-file-text me-1"></i>{{ policy.proposal.number }}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h6 class="fw-semibold mb-3"><i class="feather-cpu me-2"></i>Resumo IA</h6>
+                    {% if policy.ai_summary_status == 'done' and policy.ai_summary %}
+                        <div class="ai-summary">{{ policy.ai_summary|linebreaksbr }}</div>
+                        <small class="text-muted d-block mt-2">Atualizado em {{ policy.ai_summary_updated_at|date:"d/m/Y H:i" }}</small>
+                    {% elif policy.ai_summary_status == 'processing' %}
+                        <div class="text-center py-3">
+                            <div class="spinner-border text-primary mb-2" role="status"></div>
+                            <p class="text-muted small mb-0">Gerando resumo...</p>
+                        </div>
+                    {% elif policy.ai_summary_status == 'error' %}
+                        <div class="alert alert-warning small mb-0">Erro ao gerar resumo. Tente novamente.</div>
+                    {% else %}
+                        <p class="text-muted small">Clique no botão abaixo para gerar um resumo inteligente desta apólice.</p>
+                    {% endif %}
+                    <button class="btn btn-outline-primary btn-sm w-100 mt-2" disabled title="Em breve: integração com IA">
+                        <i class="feather-cpu me-1"></i>Resumir com IA
+                    </button>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-body p-4">
+                    <h6 class="fw-semibold mb-3">Informações</h6>
+                    <div class="small">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Cadastrada em</span>
+                            <span>{{ policy.created_at|date:"d/m/Y" }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Atualizada em</span>
+                            <span>{{ policy.updated_at|date:"d/m/Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% elif active_tab == 'items' %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <h6 class="fw-semibold mb-3">Itens Segurados</h6>
+            {% if covered_items %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Descrição</th>
+                            <th>Identificador</th>
+                            <th class="text-end">Valor Segurado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in covered_items %}
+                        <tr>
+                            <td><span class="badge bg-light text-dark">{{ item.get_item_type_display }}</span></td>
+                            <td>{{ item.description }}</td>
+                            <td>{{ item.identifier|default:"-" }}</td>
+                            <td class="text-end">R$ {{ item.insured_amount|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center py-3 mb-0">Nenhum item segurado cadastrado.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% elif active_tab == 'attachments' %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <h6 class="fw-semibold mb-3">Anexos</h6>
+            <form method="post" action="{% url 'documents:document_upload' %}" enctype="multipart/form-data" class="mb-4">
+                {% csrf_token %}
+                <input type="hidden" name="content_type_id" value="{{ content_type_id }}">
+                <input type="hidden" name="object_id" value="{{ policy.pk }}">
+                <div class="input-group">
+                    <input type="file" name="file" class="form-control" required>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="feather-upload me-1"></i>Enviar
+                    </button>
+                </div>
+            </form>
+
+            {% if documents %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Arquivo</th>
+                            <th>Tipo</th>
+                            <th>Tamanho</th>
+                            <th>Enviado em</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documents %}
+                        <tr>
+                            <td><i class="feather-file me-2"></i>{{ doc.original_filename }}</td>
+                            <td><span class="badge bg-light text-dark">{{ doc.mime_type }}</span></td>
+                            <td>{{ doc.size_display }}</td>
+                            <td>{{ doc.created_at|date:"d/m/Y H:i" }}</td>
+                            <td class="text-end">
+                                <a href="{% url 'documents:document_download' doc.pk %}" class="btn btn-sm btn-outline-primary" title="Download">
+                                    <i class="feather-download"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center py-3 mb-0">Nenhum anexo enviado.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

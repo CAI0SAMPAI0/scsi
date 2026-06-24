@@ -1,0 +1,100 @@
+{% extends "base_app.html" %}
+
+{% block title %}Apólices{% endblock %}
+{% block page_title %}Apólices{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Search -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Buscar</label>
+                    {{ search_form.q }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Status</label>
+                    {{ search_form.status }}
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="feather-search me-1"></i>Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- List -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Apólice</th>
+                            <th>Cliente</th>
+                            <th>Seguradora</th>
+                            <th>Status</th>
+                            <th>Prêmio</th>
+                            <th>Início</th>
+                            <th>Fim</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for policy in policies %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'insurance_policies:policy_detail' policy.pk %}" class="fw-medium text-decoration-none">
+                                    {{ policy.policy_number }}
+                                </a>
+                            </td>
+                            <td>{{ policy.client }}</td>
+                            <td>{{ policy.insurer }}</td>
+                            <td>
+                                <span class="badge bg-{% if policy.status == 'active' %}success{% elif policy.status == 'canceled' %}danger{% elif policy.status == 'expired' %}secondary{% elif policy.status == 'renewed' %}info{% endif %}">
+                                    {{ policy.get_status_display }}
+                                </span>
+                            </td>
+                            <td>R$ {{ policy.total_premium|floatformat:2 }}</td>
+                            <td>{{ policy.start_date|date:"d/m/Y"|default:"-" }}</td>
+                            <td>{{ policy.end_date|date:"d/m/Y"|default:"-" }}</td>
+                            <td class="text-end">
+                                <a href="{% url 'insurance_policies:policy_detail' policy.pk %}" class="btn btn-sm btn-light" title="Ver detalhes">
+                                    <i class="feather-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                Nenhuma apólice encontrada.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Anterior</a></li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">{{ num }}</a></li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Próximo</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

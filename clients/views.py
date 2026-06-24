@@ -23,9 +23,9 @@ class ClientListView(RoleRequiredMixin, TenantQuerysetMixin, ListView):
             person_type = form.cleaned_data.get('person_type', '')
             if q:
                 qs = qs.filter(
-                    models.Q(name__icontains=q)
-                    | models.Q(document__icontains=q)
-                    | models.Q(email__icontains=q)
+                    Q(name__icontains=q)
+                    | Q(document__icontains=q)
+                    | Q(email__icontains=q)
                 )
             if person_type:
                 qs = qs.filter(person_type=person_type)
@@ -83,4 +83,13 @@ class ClientDetailView(RoleRequiredMixin, TenantQuerysetMixin, DetailView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['active_tab'] = self.request.GET.get('tab', 'info')
+        from django.contrib.contenttypes.models import ContentType
+        from documents.models import Document
+        ct = ContentType.objects.get_for_model(Client)
+        ctx['content_type_id'] = ct.pk
+        ctx['documents'] = Document.objects.filter(
+            brokerage=self.request.tenant,
+            content_type=ct,
+            object_id=self.object.pk,
+        )
         return ctx

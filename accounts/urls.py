@@ -15,6 +15,7 @@ urlpatterns = [
         template_name='accounts/password_reset_form.html',
         email_template_name='accounts/email/password_reset.txt',
         subject_template_name='accounts/email/password_reset_subject.txt',
+        success_url='/senha/redefinir/enviado/',
     ), name='password_reset'),
     path('senha/redefinir/enviado/', auth_views.PasswordResetDoneView.as_view(
         template_name='accounts/password_reset_done.html',

@@ -1,0 +1,68 @@
+{% extends "base_app.html" %}
+
+{% block title %}Novo Endosso{% endblock %}
+{% block page_title %}Novo Endosso - Apólice {{ policy.policy_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h6 class="fw-semibold mb-3">Dados do Endosso</h6>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Número do Endosso *</label>
+                                {{ form.endorsement_number }}
+                                {% if form.endorsement_number.errors %}<div class="invalid-feedback d-block">{{ form.endorsement_number.errors|join:" " }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Tipo *</label>
+                                {{ form.type }}
+                                {% if form.type.errors %}<div class="invalid-feedback d-block">{{ form.type.errors|join:" " }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-medium">Status</label>
+                                {{ form.status }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-medium">Variação do Prêmio</label>
+                                {{ form.premium_change }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-medium">Data de Vigência</label>
+                                {{ form.effective_date }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Descrição</label>
+                            {{ form.description }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary fw-semibold">
+                        <i class="feather-save me-2"></i>Salvar
+                    </button>
+                    <a href="{% url 'claims:endorsement_list' policy.pk %}" class="btn btn-light fw-medium">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
