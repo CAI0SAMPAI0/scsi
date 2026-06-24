@@ -134,13 +134,8 @@
                 </div>
                 <div class="card-body text-center">
                     {% if policies_by_lob %}
-                    {% with colors='#3454d1,#17c666,#f5a623,#ea4d4d,#9b59b6,#00bcd4' %}
-                    <div class="donut-chart mx-auto" style="width:160px; height:160px; border-radius:50%; background:conic-gradient(
-                        {% for lob in policies_by_lob %}{% with c=colors|slice %}
-                        {{ lob.color|default:'#3454d1' }} {% if forloop.first %}0deg{% else %}{% endif %}
-                        {% endwith %}{% endfor %}
-                    ); position:relative;">
-                        <div style="position:absolute; inset:30px; background:white; border-radius:50%;"></div>
+                    <div id="lob-donut" class="mx-auto" style="width:160px; height:160px; border-radius:50%; position:relative;">
+                        <div style="position:absolute; inset:30px; background:white; border-radius:50%; z-index:1;"></div>
                     </div>
                     <div class="mt-3">
                         {% for lob in policies_by_lob %}
@@ -265,10 +260,6 @@
         el.style.background = 'conic-gradient(' + gradient.join(', ') + ')';
     }
 
-    {% if policies_by_lob %}
-    buildDonut('insurer-donut-placeholder', []);
-    {% endif %}
-
     {% if top_insurers %}
     buildDonut('insurer-donut', [
         {% for ins in top_insurers %}{color:'{{ ins.color }}', value:{{ ins.count }}}{% if not forloop.last %},{% endif %}{% endfor %}
@@ -284,7 +275,7 @@
     // Also build policies donut
     {% if policies_by_lob %}
     (function(){
-        var el = document.querySelector('.donut-chart');
+        var el = document.getElementById('lob-donut');
         if (!el) return;
         var segments = [
             {% for lob in policies_by_lob %}{color:'{{ lob.color|default:"#3454d1" }}', value:{{ lob.count }}}{% if not forloop.last %},{% endif %}{% endfor %}
