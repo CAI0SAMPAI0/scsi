@@ -90,3 +90,31 @@ body {
 .badge-role-agent   { background: #f0b429; color: #fff; }
 .badge-role-producer{ background: #ea4d4d; color: #fff; }
 .badge-role-operational { background: #6c757d; color: #fff; }
+
+/* === Dashboard Charts === */
+.donut-chart {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    position: relative;
+}
+.donut-chart::after {
+    content: '';
+    position: absolute;
+    inset: 30px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+/* === Funnel === */
+#funnel-chart table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 3px;
+}
+#funnel-chart td {
+    transition: opacity 0.2s;
+}
+#funnel-chart tr:hover td {
+    opacity: 0.85;
+}
