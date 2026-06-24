@@ -1,22 +1,20 @@
-name: Deploy Backend to Hugging Face Spaces
+name: Deploy to Hugging Face Spaces
 
 on:
   push:
     branches:
       - main
-    paths:
-      - 'backend/**'
-  workflow_dispatch: {}
 
 jobs:
   deploy-to-huggingface:
-    name: Sync Backend to Hugging Face
+    name: Sync to Hugging Face
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          lfs: true # Baixa os arquivos LFS do seu GitHub se houver
 
       - name: Push to Hugging Face Space
         env:
@@ -25,31 +23,32 @@ jobs:
           git config --global user.email "github-actions-bot@example.com"
           git config --global user.name "GitHub Actions Bot"
           
-          # Ativa o Git LFS no runner
+          # Garante que o Git LFS está instalado no sistema
           git lfs install
           
-          # Clone the Hugging Face Space repository into a temporary folder
-          git clone https://caio007:$HF_TOKEN@huggingface.co/spaces/caio007/scsi hf_space_dir
+          # Clone usando o token de forma segura
+          git clone https://x-access-token:$HF_TOKEN@huggingface.co/spaces/caio007/scsi hf_space_dir
           
-          # Remove existing files in the Space directory, keeping only the .git directory
+          # Remove arquivos antigos do Space mantendo apenas a pasta .git
           find hf_space_dir -maxdepth 1 ! -name 'hf_space_dir' ! -name '.git' -exec rm -rf {} +
           
-          # Copy backend files into the Space directory
-          cp -r backend/* hf_space_dir/
-          # Copia explicitamente o arquivo .gitattributes para a raiz da pasta do Space
-          cp backend/.gitattributes hf_space_dir/ || true
+          # Copia todos os arquivos da raiz do repositório GitHub para a pasta do Space
+          # Exclui a própria pasta temporária 'hf_space_dir' e a pasta '.git' do GitHub para não duplicar
+          rsync -av --exclude='hf_space_dir' --exclude='.git' ./ hf_space_dir/
           
-          # Enter the Space directory
           cd hf_space_dir
           
-          # Inicializa o Git LFS localmente na pasta do Space
+          # Garante o rastreamento dos arquivos grandes no Space antes do commit
           git lfs install --local
+          git lfs track
           
-          # Check if there are changes to deploy
           git add .
+          
           if ! git diff-index --quiet HEAD; then
             git commit -m "Deploy automático: ${{ github.event.head_commit.message }}"
-            git push origin main
+            
+            # Força o push explicitamente para a branch main do Hugging Face
+            git push https://caio007:$HF_TOKEN@huggingface.co/spaces/caio007/scsi main
           else
-            echo "Nenhuma alteração detectada no backend."
+            echo "Nenhuma alteração detectada no repositório."
           fi
