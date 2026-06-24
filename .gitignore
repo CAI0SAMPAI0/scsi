@@ -176,3 +176,5 @@ cython_debug/
 .DS_Store
 site/
 staticfiles/
+design_system/refs/duralux/fonts/
+design_system/refs/duralux/images/
