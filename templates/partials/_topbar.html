@@ -83,6 +83,9 @@
 
 <script>
 (function(){
+    function getCSRF(){var m=document.cookie.match(/csrftoken=([^;]+)/);return m?m[1]:'';}
+
+    var prevCount = 0;
     function loadNotifications(){
         fetch('{% url "notifications:unread" %}')
             .then(r=>r.json())
@@ -99,16 +102,33 @@
                     list.innerHTML = '<div class="list-group-item text-center text-muted py-3"><i class="feather-bell-off mb-2 d-block"></i><small>Sem novas notificações</small></div>';
                     return;
                 }
+                if(d.count > prevCount && prevCount > 0){
+                    var newest = d.notifications[0];
+                    if(newest) document.dispatchEvent(new CustomEvent('scsi:new-notification', {detail: newest}));
+                }
+                prevCount = d.count;
                 list.innerHTML = d.notifications.map(n => {
                     const icon = n.type === 'ai_summary' ? 'cpu' : n.type === 'report' ? 'file-text' : n.type === 'renewal' ? 'refresh-cw' : 'bell';
-                    const href = n.url ? `onclick="fetch('{% url 'notifications:mark_read_all' %}/${n.id}',{method:'POST'}).then(()=>window.location='${n.url}')"` : `onclick="fetch('{% url 'notifications:mark_read_all' %}/${n.id}',{method:'POST'})"`;
-                    return `<a href="javascript:void(0);" class="list-group-item list-group-item-action" ${href}>
+                    const notifId = n.id;
+                    const notifUrl = n.url || '';
+                    return `<a href="javascript:void(0);" class="list-group-item list-group-item-action notif-item" data-id="${notifId}" data-url="${notifUrl}">
                         <div class="d-flex gap-2">
                             <i class="feather-${icon} text-primary mt-1"></i>
                             <div><div class="fw-semibold small">${n.title}</div><small class="text-muted">${n.message}</small><br><small class="text-muted">${n.created_at}</small></div>
                         </div>
                     </a>`;
                 }).join('');
+                document.querySelectorAll('.notif-item').forEach(function(el){
+                    el.addEventListener('click', function(){
+                        var nid = this.dataset.id;
+                        var nurl = this.dataset.url;
+                        var markUrl = '{% url "notifications:mark_read" pk=0 %}'.replace('/0/', '/' + nid + '/');
+                        fetch(markUrl, {method:'POST', headers:{'X-CSRFToken': getCSRF()}}).then(function(){
+                            if(nurl) window.location.href = nurl;
+                            else loadNotifications();
+                        });
+                    });
+                });
             }).catch(()=>{});
     }
     loadNotifications();
@@ -116,7 +136,7 @@
 
     document.getElementById('mark-all-read')?.addEventListener('click', function(e){
         e.preventDefault();
-        fetch('{% url "notifications:mark_read_all" %}', {method:'POST'})
+        fetch('{% url "notifications:mark_read_all" %}', {method:'POST', headers:{'X-CSRFToken': getCSRF()}})
             .then(()=>loadNotifications());
     });
 })();

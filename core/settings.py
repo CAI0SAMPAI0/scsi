@@ -95,7 +95,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = env('LANGUAGE_CODE', default='pt-br')
-TIME_ZONE = env('TIME_ZONE', default='America/Sao_Paulo')
+TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 

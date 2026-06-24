@@ -106,15 +106,45 @@ body {
     border-radius: 50%;
 }
 
-/* === Funnel === */
-#funnel-chart table {
+/* === Funnel (Trapezoid Design) === */
+.scsi-funnel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 0.5rem 0;
+}
+.scsi-funnel-stage {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 10px 16px;
+    color: #fff;
+    font-size: 13px;
+    transition: var(--scsi-transition);
+    position: relative;
+    min-height: 38px;
 }
-#funnel-chart td {
-    transition: opacity 0.2s;
+.scsi-funnel-stage:hover {
+    opacity: 0.88;
 }
-#funnel-chart tr:hover td {
-    opacity: 0.85;
+.scsi-funnel-label {
+    font-weight: 600;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+.scsi-funnel-value {
+    font-weight: 400;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0.92;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+/* === Footer Fix === */
+.nxl-footer {
+    position: relative;
+    z-index: 1;
 }

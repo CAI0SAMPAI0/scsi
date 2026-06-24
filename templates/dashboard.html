@@ -221,7 +221,7 @@
 (function () {
     'use strict';
 
-    // ── Funnel Chart ────────────────────────────────────────────────────────
+    // ── Funnel Chart (Trapezoid Design) ─────────────────────────────────────
     var funnelEl = document.getElementById('funnel-chart');
     if (funnelEl) {
         var stages = [
@@ -235,18 +235,25 @@
 
         if (stages.length > 0) {
             var n = stages.length;
-            var rows = '';
+            var html = '<div class="scsi-funnel">';
             for (var i = 0; i < n; i++) {
                 var s = stages[i];
-                // Calculate width to create a funnel shape: wider at top, narrower at bottom
-                var w = Math.max(30, 100 - (i * (100 / n))); // ensures smooth taper
-                rows += '<tr>';
-                rows += '<td style="width:' + w + '%;background:' + s.color + ';color:#fff;padding:8px 12px;font-size:13px;font-weight:600;border-radius:4px 0 0 4px;white-space:nowrap;">' + s.name + '</td>';
-                rows += '<td style="background:' + s.color + ';color:#fff;padding:8px 12px;font-size:12px;font-weight:400;text-align:right;border-radius:0 4px 4px 0;white-space:nowrap;">';
-                rows += s.count + ' deals &middot; R$ ' + s.total.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                rows += '</td></tr>';
+                // Calculate top and bottom widths for trapezoid shape
+                var topW = 100 - (i * (60 / n));        // top edge width %
+                var botW = 100 - ((i + 1) * (60 / n));  // bottom edge width %
+                var topL = (100 - topW) / 2;             // left offset top
+                var botL = (100 - botW) / 2;             // left offset bottom
+
+                var clipPath = 'polygon(' + topL + '% 0%, ' + (topL + topW) + '% 0%, ' + (botL + botW) + '% 100%, ' + botL + '% 100%)';
+                var valueStr = s.count + (s.count === 1 ? ' deal' : ' deals') + '  ·  R$ ' + s.total.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+                html += '<div class="scsi-funnel-stage" style="clip-path:' + clipPath + '; -webkit-clip-path:' + clipPath + '; background:' + s.color + ';">';
+                html += '<span class="scsi-funnel-label">' + s.name + '</span>';
+                html += '<span class="scsi-funnel-value">' + valueStr + '</span>';
+                html += '</div>';
             }
-            funnelEl.innerHTML = '<table style="width:100%;border-collapse:separate;border-spacing:0 3px;">' + rows + '</table>';
+            html += '</div>';
+            funnelEl.innerHTML = html;
         }
     }
 
@@ -316,3 +323,4 @@
 })();
 </script>
 {% endblock %}
+

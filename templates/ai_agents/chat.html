@@ -1,51 +1,97 @@
-{% extends "base.html" %}
+{% extends "base_app.html" %}
 {% load static %}
 
 {% block title %}Chat IA{% endblock %}
 
-{% block body %}
-<div class="nxl-overlay"></div>
-<nav class="nxl-navigation" style="transform:translateX(-100%);"></nav>
+{% block extra_css %}
+<style>
+    /* Chat-specific layout — full height minus header/footer */
+    .chat-wrapper {
+        display: flex;
+        height: calc(100vh - 140px);
+        border-radius: var(--scsi-border-radius);
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        background: var(--scsi-card-bg);
+    }
 
-<div style="margin-left:0; min-height:100vh; display:flex; flex-direction:column;">
+    /* Sessions sidebar */
+    .chat-sessions {
+        width: 260px;
+        border-right: 1px solid #e5e7eb;
+        overflow-y: auto;
+        background: #f9fafb;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+    }
 
-    <!-- Header -->
-    <header class="nxl-header">
-        <div class="header-wrapper">
-            <div class="header-left d-flex align-items-center gap-4">
-                <a href="{% url 'accounts:dashboard' %}" class="btn btn-primary btn-sm">
-                    <i class="feather-arrow-left me-1"></i>Voltar
-                </a>
-                <div class="d-flex align-items-center gap-2">
-                    <i class="feather-message-circle text-primary"></i>
-                    <span class="fw-bold fs-5">Chat com IA</span>
-                </div>
-            </div>
-            <div class="header-right ms-auto">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar-text avatar-md bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-semibold" style="width:40px;height:40px;font-size:.9rem;">
-                        {{ request.user.initials }}
-                    </div>
-                    <span class="fw-semibold d-none d-sm-inline">{{ request.user.get_full_name }}</span>
-                </div>
-            </div>
-        </div>
-    </header>
+    /* Main chat area */
+    .chat-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.25rem;
+    }
+    .chat-input-bar {
+        border-top: 1px solid #e5e7eb;
+        padding: 1rem;
+        background: #fff;
+    }
 
-    <!-- Chat body -->
-    <div style="flex:1; display:flex; overflow:hidden;">
+    /* Message bubbles */
+    .msg-bubble {
+        max-width: 75%;
+        padding: 0.75rem 1rem;
+        border-radius: var(--scsi-border-radius);
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    .msg-user {
+        background-color: var(--scsi-primary);
+        color: #fff;
+        margin-left: auto;
+    }
+    .msg-assistant {
+        background-color: #f3f4f6;
+        color: #111827;
+        border: 1px solid #e5e7eb;
+    }
 
+    /* Responsive */
+    @media (max-width: 768px) {
+        .chat-sessions { width: 200px; }
+    }
+    @media (max-width: 576px) {
+        .chat-sessions { display: none; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="feather-message-circle text-primary fs-4"></i>
+        <h5 class="mb-0 fw-bold">Chat com IA</h5>
+    </div>
+
+    <div class="chat-wrapper">
         <!-- Sessions sidebar -->
-        <div style="width:280px; border-right:1px solid #e5e7eb; overflow-y:auto; background:#f9fafb; flex-shrink:0;">
+        <div class="chat-sessions">
             <div class="p-3">
                 <button class="btn btn-primary btn-sm w-100 mb-3" id="new-session-btn">
                     <i class="feather-plus me-1"></i>Nova Sessão
                 </button>
                 <div class="list-group list-group-flush" id="sessions-list">
                     {% for s in sessions %}
-                    <a href="?session={{ s.pk }}" class="list-group-item list-group-item-action {% if session and s.pk == session.pk %}active{% endif %}" style="{% if session and s.pk == session.pk %}background-color:#3454d1; color:white; border-color:#3454d1;{% endif %}">
+                    <a href="?session={{ s.pk }}" class="list-group-item list-group-item-action {% if session and s.pk == session.pk %}active{% endif %}" style="{% if session and s.pk == session.pk %}background-color:var(--scsi-primary); color:white; border-color:var(--scsi-primary);{% endif %}">
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-truncate" style="max-width:180px;">{{ s.title }}</span>
+                            <span class="text-truncate" style="max-width:160px;">{{ s.title }}</span>
                             <button class="btn btn-sm btn-link p-0 delete-session {% if session and s.pk == session.pk %}text-white-50{% else %}text-danger{% endif %}" data-id="{{ s.pk }}" title="Excluir">
                                 <i class="feather-trash-2"></i>
                             </button>
@@ -58,12 +104,12 @@
         </div>
 
         <!-- Chat area -->
-        <div style="flex:1; display:flex; flex-direction:column; min-width:0;">
+        <div class="chat-main">
             {% if session %}
-            <div style="flex:1; overflow-y:auto; padding:1rem;" id="chat-messages">
+            <div class="chat-messages" id="chat-messages">
                 {% for msg in messages %}
                 <div class="mb-3 {% if msg.role == 'user' %}text-end{% endif %}">
-                    <div class="d-inline-block p-3 rounded-3" style="max-width:75%; {% if msg.role == 'user' %}background-color:#3454d1; color:white;{% else %}background-color:#f3f4f6; color:#111827; border:1px solid #e5e7eb;{% endif %}">
+                    <div class="d-inline-block msg-bubble {% if msg.role == 'user' %}msg-user{% else %}msg-assistant{% endif %}">
                         {% if msg.role == 'assistant' %}
                         <div>{{ msg.content|linebreaksbr }}</div>
                         {% else %}
@@ -75,7 +121,7 @@
                 {% endfor %}
             </div>
 
-            <div style="border-top:1px solid #e5e7eb; padding:1rem; background:white;">
+            <div class="chat-input-bar">
                 <form id="chat-form" class="d-flex gap-2">
                     <input type="hidden" id="session-id" value="{{ session.pk }}">
                     <input type="text" class="form-control" id="chat-input" placeholder="Digite sua mensagem..." autocomplete="off">
@@ -96,7 +142,9 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
 (function () {
     'use strict';
@@ -122,42 +170,45 @@
         });
     });
 
-    document.getElementById('chat-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-        var input = document.getElementById('chat-input');
-        var content = input.value.trim();
-        if (!content) return;
+    var chatForm = document.getElementById('chat-form');
+    if (chatForm) {
+        chatForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var input = document.getElementById('chat-input');
+            var content = input.value.trim();
+            if (!content) return;
 
-        var sessionId = document.getElementById('session-id').value;
-        input.value = '';
-        input.disabled = true;
+            var sessionId = document.getElementById('session-id').value;
+            input.value = '';
+            input.disabled = true;
 
-        var msgArea = document.getElementById('chat-messages');
-        msgArea.innerHTML += '<div class="mb-3 text-end"><div class="d-inline-block p-3 rounded-3" style="max-width:75%; background-color:#3454d1; color:white;">' + content + '</div></div>';
-        msgArea.innerHTML += '<div class="mb-3" id="loading-indicator"><div class="d-inline-block p-3 rounded-3" style="background:#f3f4f6; border:1px solid #e5e7eb;"><em>Digitando...</em></div></div>';
-        msgArea.scrollTop = msgArea.scrollHeight;
-
-        fetch('{% url "ai_agents:chat_message" %}', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
-            body: JSON.stringify({ session_id: sessionId, content: content })
-        }).then(function (r) { return r.json(); }).then(function (d) {
-            var loading = document.getElementById('loading-indicator');
-            if (loading) loading.remove();
-            if (d.ok) {
-                msgArea.innerHTML += '<div class="mb-3"><div class="d-inline-block p-3 rounded-3" style="max-width:75%; background:#f3f4f6; color:#111827; border:1px solid #e5e7eb;"><div>' + d.response.replace(/\n/g, '<br>') + '</div></div></div>';
-            } else {
-                msgArea.innerHTML += '<div class="mb-3"><div class="d-inline-block p-3 rounded-3" style="max-width:75%; background:#fee2e2; color:#991b1b;">Erro: ' + d.error + '</div></div>';
-            }
+            var msgArea = document.getElementById('chat-messages');
+            msgArea.innerHTML += '<div class="mb-3 text-end"><div class="d-inline-block msg-bubble msg-user">' + content + '</div></div>';
+            msgArea.innerHTML += '<div class="mb-3" id="loading-indicator"><div class="d-inline-block msg-bubble msg-assistant"><em>Digitando...</em></div></div>';
             msgArea.scrollTop = msgArea.scrollHeight;
-            input.disabled = false;
-            input.focus();
-        }).catch(function () {
-            var loading = document.getElementById('loading-indicator');
-            if (loading) loading.remove();
-            input.disabled = false;
+
+            fetch('{% url "ai_agents:chat_message" %}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ session_id: sessionId, content: content })
+            }).then(function (r) { return r.json(); }).then(function (d) {
+                var loading = document.getElementById('loading-indicator');
+                if (loading) loading.remove();
+                if (d.ok) {
+                    msgArea.innerHTML += '<div class="mb-3"><div class="d-inline-block msg-bubble msg-assistant"><div>' + d.response.replace(/\n/g, '<br>') + '</div></div></div>';
+                } else {
+                    msgArea.innerHTML += '<div class="mb-3"><div class="d-inline-block p-3 rounded-3" style="max-width:75%; background:#fee2e2; color:#991b1b;">Erro: ' + d.error + '</div></div>';
+                }
+                msgArea.scrollTop = msgArea.scrollHeight;
+                input.disabled = false;
+                input.focus();
+            }).catch(function () {
+                var loading = document.getElementById('loading-indicator');
+                if (loading) loading.remove();
+                input.disabled = false;
+            });
         });
-    });
+    }
 })();
 </script>
 {% endblock %}

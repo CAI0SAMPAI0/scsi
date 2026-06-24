@@ -1,9 +1,11 @@
 from celery import shared_task
 
 
-def _get_owner(brokerage):
+def _notify_brokerage(brokerage, type, title, message, url=''):
+    from notifications.views import create_notification
     from accounts.models import User
-    return User.objects.filter(brokerage=brokerage, role='owner', is_active=True).first()
+    for user in User.objects.filter(brokerage=brokerage, is_active=True):
+        create_notification(user=user, brokerage=brokerage, type=type, title=title, message=message, url=url)
 
 
 @shared_task
@@ -25,15 +27,13 @@ def generate_client_summary(client_id):
 
     summarize_entity(client, 'Cliente', fetch_data)
 
-    owner = _get_owner(client.brokerage)
-    if owner:
-        create_notification(
-            user=owner, brokerage=client.brokerage,
-            type='ai_summary',
-            title=f'Resumo do cliente {client.name} pronto',
-            message='O resumo do cliente foi gerado com sucesso.',
-            url=f'/clientes/{client.pk}/',
-        )
+    _notify_brokerage(
+        brokerage=client.brokerage,
+        type='ai_summary',
+        title=f'Resumo do cliente {client.name} pronto',
+        message='O resumo do cliente foi gerado com sucesso. Clique para ver.',
+        url=f'/clientes/{client.pk}/',
+    )
 
 
 @shared_task
@@ -57,15 +57,13 @@ def generate_policy_summary(policy_id):
 
     summarize_entity(policy, 'Apólice', fetch_data)
 
-    owner = _get_owner(policy.brokerage)
-    if owner:
-        create_notification(
-            user=owner, brokerage=policy.brokerage,
-            type='ai_summary',
-            title=f'Resumo da apólice {policy.policy_number} pronto',
-            message='O resumo da apólice foi gerado com sucesso.',
-            url=f'/apolices/{policy.pk}/',
-        )
+    _notify_brokerage(
+        brokerage=policy.brokerage,
+        type='ai_summary',
+        title=f'Resumo da apólice {policy.policy_number} pronto',
+        message='O resumo da apólice foi gerado com sucesso. Clique para ver.',
+        url=f'/apolices/{policy.pk}/',
+    )
 
 
 @shared_task
@@ -90,15 +88,13 @@ def generate_claim_summary(claim_id):
 
     summarize_entity(claim, 'Sinistro', fetch_data)
 
-    owner = _get_owner(claim.brokerage)
-    if owner:
-        create_notification(
-            user=owner, brokerage=claim.brokerage,
-            type='ai_summary',
-            title=f'Resumo do sinistro {claim.claim_number} pronto',
-            message='O resumo do sinistro foi gerado com sucesso.',
-            url=f'/sinistros/{claim.pk}/',
-        )
+    _notify_brokerage(
+        brokerage=claim.brokerage,
+        type='ai_summary',
+        title=f'Resumo do sinistro {claim.claim_number} pronto',
+        message='O resumo do sinistro foi gerado com sucesso. Clique para ver.',
+        url=f'/sinistros/{claim.pk}/',
+    )
 
 
 @shared_task
@@ -119,15 +115,13 @@ def generate_proposal_summary(proposal_id):
 
     summarize_entity(proposal, 'Proposta', fetch_data)
 
-    owner = _get_owner(proposal.brokerage)
-    if owner:
-        create_notification(
-            user=owner, brokerage=proposal.brokerage,
-            type='ai_summary',
-            title=f'Resumo da proposta {proposal.number} pronto',
-            message='O resumo da proposta foi gerado com sucesso.',
-            url=f'/propostas/{proposal.pk}/',
-        )
+    _notify_brokerage(
+        brokerage=proposal.brokerage,
+        type='ai_summary',
+        title=f'Resumo da proposta {proposal.number} pronto',
+        message='O resumo da proposta foi gerado com sucesso. Clique para ver.',
+        url=f'/propostas/{proposal.pk}/',
+    )
 
 
 @shared_task
@@ -149,12 +143,10 @@ def generate_deal_summary(deal_id):
 
     summarize_entity(deal, 'Negociação', fetch_data)
 
-    owner = _get_owner(deal.brokerage)
-    if owner:
-        create_notification(
-            user=owner, brokerage=deal.brokerage,
-            type='ai_summary',
-            title=f'Resumo da negociação {deal.title} pronto',
-            message='O resumo da negociação foi gerado com sucesso.',
-            url=f'/crm/negociacoes/{deal.pk}/',
-        )
+    _notify_brokerage(
+        brokerage=deal.brokerage,
+        type='ai_summary',
+        title=f'Resumo da negociação {deal.title} pronto',
+        message='O resumo da negociação foi gerado com sucesso. Clique para ver.',
+        url=f'/crm/negociacoes/{deal.pk}/',
+    )

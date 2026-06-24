@@ -129,19 +129,25 @@
                     {% if proposal.ai_summary_status == 'done' and proposal.ai_summary %}
                         <div class="ai-summary">{{ proposal.ai_summary|linebreaksbr }}</div>
                         <small class="text-muted d-block mt-2">Atualizado em {{ proposal.ai_summary_updated_at|date:"d/m/Y H:i" }}</small>
+                        <button class="btn btn-outline-primary btn-sm w-100 mt-3" id="btn-ai-summary" data-entity-type="proposal" data-entity-id="{{ proposal.pk }}">
+                            <i class="feather-cpu me-1"></i>Gerar novamente
+                        </button>
                     {% elif proposal.ai_summary_status == 'processing' %}
                         <div class="text-center py-3">
                             <div class="spinner-border text-primary mb-2" role="status"></div>
-                            <p class="text-muted small mb-0">Gerando resumo...</p>
+                            <p class="text-muted small mb-0">Gerando resumo... Você será notificado quando ficar pronto.</p>
                         </div>
                     {% elif proposal.ai_summary_status == 'error' %}
                         <div class="alert alert-warning small mb-0">Erro ao gerar resumo. Tente novamente.</div>
+                        <button class="btn btn-outline-primary btn-sm w-100 mt-2" id="btn-ai-summary" data-entity-type="proposal" data-entity-id="{{ proposal.pk }}">
+                            <i class="feather-cpu me-1"></i>Tentar novamente
+                        </button>
                     {% else %}
                         <p class="text-muted small">Clique no botão abaixo para gerar um resumo inteligente desta proposta.</p>
+                        <button class="btn btn-outline-primary btn-sm w-100 mt-2" id="btn-ai-summary" data-entity-type="proposal" data-entity-id="{{ proposal.pk }}">
+                            <i class="feather-cpu me-1"></i>Resumir com IA
+                        </button>
                     {% endif %}
-                    <button class="btn btn-outline-primary btn-sm w-100 mt-2" disabled title="Em breve: integração com IA">
-                        <i class="feather-cpu me-1"></i>Resumir com IA
-                    </button>
                 </div>
             </div>
 

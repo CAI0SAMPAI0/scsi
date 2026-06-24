@@ -1,4 +1,3 @@
-from django.contrib import messages
 from django.http import JsonResponse
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -35,7 +34,7 @@ class TriggerSummaryView(LoginRequiredMixin, View):
             return JsonResponse({'ok': False, 'error': 'Não encontrado'}, status=404)
 
         if entity.ai_summary_status == 'processing':
-            return JsonResponse({'ok': False, 'error': 'Já está processando'}, status=400)
+            return JsonResponse({'ok': False, 'error': 'Resumo já está sendo gerado. Aguarde.'}, status=409)
 
         entity.ai_summary_status = 'processing'
         entity.save(update_fields=['ai_summary_status'])
@@ -43,7 +42,12 @@ class TriggerSummaryView(LoginRequiredMixin, View):
         task_module, task_name = task_path.rsplit('.', 1)
         mod = importlib.import_module(task_module)
         task_fn = getattr(mod, task_name)
-        task_fn.delay(entity.pk)
 
-        messages.success(request, 'Estamos gerando o resumo. Você será notificado quando ficar pronto.')
-        return JsonResponse({'ok': True})
+        try:
+            task_fn.delay(entity.pk)
+        except Exception:
+            entity.ai_summary_status = 'error'
+            entity.save(update_fields=['ai_summary_status'])
+            return JsonResponse({'ok': False, 'error': 'Serviço de fila indisponível. Tente novamente mais tarde.'}, status=503)
+
+        return JsonResponse({'ok': True, 'message': 'Estamos gerando o resumo. Você será notificado quando ficar pronto.'})
