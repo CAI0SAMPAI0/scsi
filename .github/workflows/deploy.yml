@@ -24,7 +24,7 @@ jobs:
           git lfs install
           
           # Adiciona o Hugging Face como um repositório remoto chamado 'hf'
-          git remote add hf https://caio007:$HF_TOKEN@huggingface.co/spaces/caio007/scsi
+          git remote add hf https://SUPERCAI0:$HF_TOKEN@huggingface.co/spaces/SUPERCAI0/scsi
           
           # Envia os arquivos da sua branch atual (main) para a branch main do Hugging Face
           # O parâmetro --force garante a sobrescrevência mesmo que o Space esteja vazio ou desalinhado
