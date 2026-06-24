@@ -71,19 +71,7 @@
                 </div>
                 <div class="card-body">
                     {% if funnel_data %}
-                    <div class="funnel-container" style="padding:10px 0;">
-                        {% for stage in funnel_data %}
-                        {% with total_stages=funnel_data|length %}
-                        {% widthratio forloop.counter total_stages 100 as width_pct %}
-                        {% endwith %}
-                        <div class="funnel-row" style="display:flex; justify-content:center; margin-bottom:4px;">
-                            <div style="width:{% widthratio forloop.counter funnel_data|length 100 %}%; min-width:140px; max-width:100%; background:{{ stage.stage__color|default:'#3454d1' }}; color:white; text-align:center; padding:8px 12px; border-radius:4px; font-size:13px; font-weight:600; position:relative;">
-                                <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%);">{{ stage.stage__name|default:"Sem etapa" }}</span>
-                                <span style="position:absolute; right:12px; top:50%; transform:translateY(-50%); font-weight:400; font-size:11px;">{{ stage.count }} deals · R$ {{ stage.total|floatformat:0 }}</span>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
+                    <div id="funnel-chart"></div>
                     {% else %}
                     <div class="text-center text-muted py-4">
                         <i class="feather-trello mb-2 d-block" style="font-size:2rem;"></i>
@@ -243,17 +231,40 @@
 
 <script>
 (function(){
+    // Build funnel
+    var funnelEl = document.getElementById('funnel-chart');
+    if (funnelEl) {
+        var stages = [
+            {% for stage in funnel_data %}
+            {name:'{{ stage.stage__name|default:"Sem etapa"|escapejs }}', color:'{{ stage.stage__color|default:"#3454d1" }}', count:{{ stage.count }}, total:{{ stage.total|default:"0" }}}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+        if (stages.length > 0) {
+            var n = stages.length;
+            var html = '<table style="width:100%; border-collapse:separate; border-spacing:0 2px;">';
+            stages.forEach(function(s, i){
+                var widthPct = 100 - (i * (60 / n));
+                html += '<tr>';
+                html += '<td style="width:' + widthPct + '%; background:' + s.color + '; color:white; padding:8px 14px; font-size:13px; font-weight:600; border-radius:4px 0 0 4px; white-space:nowrap;">' + s.name + '</td>';
+                html += '<td style="background:' + s.color + '; color:white; padding:8px 14px; font-size:12px; font-weight:400; text-align:right; border-radius:0 4px 4px 0; white-space:nowrap;">' + s.count + ' deals &middot; R$ ' + s.total.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}) + '</td>';
+                html += '</tr>';
+            });
+            html += '</table>';
+            funnelEl.innerHTML = html;
+        }
+    }
+
     // Build donut charts with conic-gradient
     function buildDonut(elementId, segments) {
-        const el = document.getElementById(elementId);
+        var el = document.getElementById(elementId);
         if (!el || !segments.length) return;
-        let total = segments.reduce((s, seg) => s + seg.value, 0);
+        var total = segments.reduce(function(s, seg) { return s + seg.value; }, 0);
         if (total === 0) return;
-        let deg = 0;
-        let gradient = [];
-        segments.forEach(seg => {
-            const pct = seg.value / total;
-            const start = deg;
+        var deg = 0;
+        var gradient = [];
+        segments.forEach(function(seg) {
+            var pct = seg.value / total;
+            var start = deg;
             deg += pct * 360;
             gradient.push(seg.color + ' ' + start + 'deg ' + deg + 'deg');
         });
@@ -272,26 +283,10 @@
     ]);
     {% endif %}
 
-    // Also build policies donut
     {% if policies_by_lob %}
-    (function(){
-        var el = document.getElementById('lob-donut');
-        if (!el) return;
-        var segments = [
-            {% for lob in policies_by_lob %}{color:'{{ lob.color|default:"#3454d1" }}', value:{{ lob.count }}}{% if not forloop.last %},{% endif %}{% endfor %}
-        ];
-        var total = segments.reduce(function(s, seg){ return s + seg.value; }, 0);
-        if (total === 0) return;
-        var deg = 0;
-        var gradient = [];
-        segments.forEach(function(seg){
-            var pct = seg.value / total;
-            var start = deg;
-            deg += pct * 360;
-            gradient.push(seg.color + ' ' + start + 'deg ' + deg + 'deg');
-        });
-        el.style.background = 'conic-gradient(' + gradient.join(', ') + ')';
-    })();
+    buildDonut('lob-donut', [
+        {% for lob in policies_by_lob %}{color:'{{ lob.color|default:"#3454d1" }}', value:{{ lob.count }}}{% if not forloop.last %},{% endif %}{% endfor %}
+    ]);
     {% endif %}
 })();
 </script>

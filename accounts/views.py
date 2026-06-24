@@ -118,7 +118,10 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         pipeline = Deal.objects.filter(brokerage=tenant).values('stage__name', 'stage__color').annotate(
             count=Count('id'), total=Sum('estimated_value')
         ).order_by('stage__order')
-        ctx['funnel_data'] = list(pipeline)
+        funnel_list = list(pipeline)
+        for f in funnel_list:
+            f['total'] = f['total'] or 0
+        ctx['funnel_data'] = funnel_list
 
         # Policies by line of business with colors
         lob_colors = ['#3454d1', '#17c666', '#f5a623', '#ea4d4d', '#9b59b6', '#00bcd4']
