@@ -141,3 +141,59 @@ except Exception:  # pragma: no cover
     CELERY_BROKER_URL = 'memory://'
     CELERY_RESULT_BACKEND = 'cache+memory://'
 
+
+# ==============================================================================
+# PERFORMANCE OPTIMIZATIONS
+# ==============================================================================
+
+# 1. WhiteNoise Caching (far-future headers for static files)
+WHITENOISE_MAX_AGE = env.int('WHITENOISE_MAX_AGE', default=31536000)  # 1 year
+
+# 2. Redis/LocalMemory Cache Backend Configuration
+try:
+    import redis
+    redis_url = env('REDIS_CACHE_URL', default=env('CELERY_BROKER_URL', default='redis://localhost:6379/0'))
+    r = redis.Redis.from_url(redis_url, socket_connect_timeout=1)
+    r.ping()
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': redis_url,
+        }
+    }
+except Exception:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'scsi-locmem-cache',
+        }
+    }
+
+# 3. Database Persistent Connections
+for db in DATABASES.values():
+    db['CONN_MAX_AGE'] = env.int('CONN_MAX_AGE', default=600)  # 10 minutes
+
+# 4. Optimized Session Engine (writes to DB, reads from Cache)
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+
+# 5. Insert GZipMiddleware for compressed dynamic responses
+if 'django.middleware.gzip.GZipMiddleware' not in MIDDLEWARE:
+    idx = 0
+    if 'django.middleware.security.SecurityMiddleware' in MIDDLEWARE:
+        idx = MIDDLEWARE.index('django.middleware.security.SecurityMiddleware') + 1
+    elif 'whitenoise.middleware.WhiteNoiseMiddleware' in MIDDLEWARE:
+        idx = MIDDLEWARE.index('whitenoise.middleware.WhiteNoiseMiddleware') + 1
+    MIDDLEWARE.insert(idx, 'django.middleware.gzip.GZipMiddleware')
+
+# 6. Cached template loader in production
+if not DEBUG:
+    TEMPLATES[0]['OPTIONS']['loaders'] = [
+        ('django.template.loaders.cached.Loader', [
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+        ]),
+    ]
+    if 'APP_DIRS' in TEMPLATES[0]:
+        del TEMPLATES[0]['APP_DIRS']
+
+
