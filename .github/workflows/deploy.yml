@@ -14,18 +14,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          lfs: true # Garante que arquivos grandes de IA sejam baixados
+          lfs: true # Garante que arquivos grandes sejam baixados
 
       - name: Push to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # Configura o Git LFS (obrigatório para o Hugging Face)
+          # 1. Inicializa o Git LFS
           git lfs install
           
-          # Adiciona o Hugging Face como um repositório remoto chamado 'hf'
-          git remote add hf https://SUPERCAI0:$HF_TOKEN@huggingface.co/spaces/SUPERCAI0/scsi
+          # 2. Configura o gerenciador de credenciais para salvar o Token de forma segura
+          git config --global credential.helper store
+          echo "https://SUPERCAI0:$HF_TOKEN@huggingface.co" > ~/.git-credentials
           
-          # Envia os arquivos da sua branch atual (main) para a branch main do Hugging Face
-          # O parâmetro --force garante a sobrescrevência mesmo que o Space esteja vazio ou desalinhado
+          # 3. Adiciona o repositório remoto do Space (sem expor o token na URL)
+          git remote add hf https://huggingface.co/spaces/SUPERCAI0/scsi
+          
+          # 4. Faz o push forçado (o Git e o LFS vão usar a credencial salva acima)
           git push --force hf main
