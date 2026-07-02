@@ -14,21 +14,25 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          lfs: true # Baixa os arquivos do LFS se houver
+          lfs: true
+
+      - name: Verificar se o Token Existe
+        run: |
+          if [ -z "${{ secrets.HF_TOKEN }}" ]; then
+            echo "=========================================================="
+            echo "❌ ERRO CRÍTICO: O seu HF_TOKEN está VAZIO ou NÃO EXISTE!"
+            echo "O GitHub não encontrou o Secret configurado."
+            echo "=========================================================="
+            exit 1
+          fi
 
       - name: Push to Hugging Face Space
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # 1. Inicializa o Git LFS
+          # Inicializa o LFS
           git lfs install
           
-          # 2. Injeta o token diretamente no cabeçalho de autorização para o domínio do Hugging Face
-          # Isso resolve o problema do Git LFS perder a autenticação
-          git config --global http.https://huggingface.co/.extraheader "Authorization: Bearer $HF_TOKEN"
+          # Passa o token diretamente na URL de destino de forma segura
+          git remote add hf https://SUPERCAI0:${{ secrets.HF_TOKEN }}@huggingface.co/spaces/SUPERCAI0/scsi
           
-          # 3. Adiciona o repositório remoto de forma limpa
-          git remote add hf https://huggingface.co/spaces/SUPERCAI0/scsi
-          
-          # 4. Envia os arquivos
+          # Envia os arquivos
           git push --force hf main
